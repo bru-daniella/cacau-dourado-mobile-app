@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
+import { Link } from "expo-router";
 
 export default function Index() {
   const theme = useTheme();
@@ -7,6 +8,10 @@ export default function Index() {
     <View style={[style.container, { backgroundColor: theme.colors.background }]}>
       <View style={style.conteudo}>
         <Text style={style.text}>Home</Text>
+
+        <Link href="/showcase" asChild>
+          <Button mode="contained">Ver Componentes (Showcase)</Button>
+        </Link>
       </View>
     </View>
   );
