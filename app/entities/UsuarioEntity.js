@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8c8b1fc10aa310a442be214f299bc1e2406aaed2
 function normalizeId(raw) {
   if (raw == null) return null;
   const t = typeof raw;
