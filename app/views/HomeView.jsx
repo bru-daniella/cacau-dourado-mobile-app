@@ -1,5 +1,3 @@
-HomeView.jsx
-
 import { StyleSheet, Text, View } from "react-native";
 import { useTheme } from "react-native-paper";
 
