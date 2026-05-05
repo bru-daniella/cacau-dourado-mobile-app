@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Switch, Text, TextInput, useTheme } from "react-native-paper";
 
-import ContatoEntity from "../entities/ContatoEntity";
-import ContatoService from "../services/ContatoService";
+import ContatoEntity from "../entities/ProdutoEntitys";
+import ProdutosService from "../services/ProdutosService";
 
 export default function ContatoFormView() {
   const theme = useTheme();
@@ -24,7 +24,7 @@ export default function ContatoFormView() {
   useEffect(() => {
     if (!id) return;
 
-    ContatoService.findById(id).then((contato) => {
+    ProdutosService.findById(id).then((contato) => { 
       if (!contato) return;
 
       setIdContato(contato.id);
@@ -50,7 +50,7 @@ export default function ContatoFormView() {
       sexo ? "M" : "F"
     );
 
-    ContatoService.save(contato).then(() => {
+    ProdutosService.save(contato).then(() => {
       router.back();
     });
   }

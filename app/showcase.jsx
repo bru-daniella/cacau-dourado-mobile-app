@@ -1,10 +1,9 @@
-import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Appbar, Button, Card, Divider, Text, TextInput, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { Appbar, Card, Divider, Text, useTheme } from "react-native-paper";
+import AppButton from "./components/AppButton";
 import AuthForm from "./components/AuthForm";
 import ProductCard from "./components/ProductCard";
-import AppButton from "./components/AppButton";
 
 export default function Showcase() {
   const theme = useTheme();

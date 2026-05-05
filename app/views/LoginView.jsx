@@ -1,11 +1,52 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Alert, StyleSheet, View } from 'react-native';
+import AuthForm from '../components/AuthForm';
+import UsuarioEntity from '../entities/UsuarioEntity';
+import UsuariosService from '../services/UsuariosService';
 
 export default function LoginView() {
+  const router = useRouter();
+
+  const handleSubmit = async (data) => {
+    try {
+      if (data.isLogin) {
+        // Lógica de Login
+        const usuario = await UsuariosService.login(data.email, data.password);
+        if (usuario) {
+          Alert.alert("Sucesso", "Login realizado com sucesso!");
+          // Navegar para a tela principal (Home)
+          router.replace('/views/HomeView');
+        } else {
+          Alert.alert("Erro", "Email ou senha incorretos.");
+        }
+      } else {
+        // Lógica de Cadastro
+        if (!data.name || !data.email || !data.password) {
+          Alert.alert("Erro", "Preencha todos os campos.");
+          return;
+        }
+
+        const usuarioExistente = await UsuariosService.findByEmail(data.email);
+        if (usuarioExistente) {
+          Alert.alert("Erro", "Já existe um usuário com este e-mail.");
+          return;
+        }
+
+        const novoUsuario = new UsuarioEntity(null, data.name, data.email, data.password);
+        await UsuariosService.save(novoUsuario);
+        Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
+        // Navegar para a tela principal (Home) após cadastro
+        router.replace('/views/HomeView');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Ocorreu um erro ao processar sua solicitação.");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <Text style={styles.subtitle}>Acesso à conta</Text>
+      <AuthForm onSubmit={handleSubmit} />
     </View>
   );
 }
@@ -13,23 +54,7 @@ export default function LoginView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    minHeight: 250,
-    backgroundColor: '#0D0D0D',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: '#733E10',
-  },
-  title: {
-    color: '#BF8F36',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    color: '#F2DCB3',
-    fontSize: 16,
+    backgroundColor: '#F2F2F2',
   },
 });
