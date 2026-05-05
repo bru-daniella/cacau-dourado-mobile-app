@@ -1,5 +1,7 @@
+
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContatoEntity from "../entities/ContatoEntity";
+import ContatoEntity from "../entities/ProdutoEntitys";
 
 const STORAGE_KEY = "@contatos";
 
@@ -36,7 +38,7 @@ let contatos = [
   ),
 ];
 
-export default class ContatoService {
+export default class ProdutosService {
 
   static async findAll() {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
