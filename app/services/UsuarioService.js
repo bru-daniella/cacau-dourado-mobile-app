@@ -3,7 +3,7 @@ import UsuarioEntity from "../entities/UsuarioEntity";
 
 const STORAGE_KEY = "@usuarios";
 
-export default class UsuariosService {
+export default class UsuarioService {
   static async findAll() {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
     if (json) {

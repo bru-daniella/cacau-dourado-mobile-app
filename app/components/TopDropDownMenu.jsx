@@ -1,22 +1,71 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { StyleSheet } from "react-native";
+import { Appbar, Divider, Menu } from "react-native-paper";
 
 export default function TopDropDownMenu() {
+  const [visible, setVisible] = useState(false);
+  const router = useRouter();
+
+  const abrirMenu = () => setVisible(true);
+  const fecharMenu = () => setVisible(false);
+
+  const navegarPara = (rota) => {
+    fecharMenu();
+    router.push(rota);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cacau Dourado</Text>
-    </View>
+    <Appbar.Header style={styles.header}>
+      <Appbar.Content
+        title="Cacau Dourado"
+        titleStyle={styles.title}
+      />
+
+      <Menu
+        visible={visible}
+        onDismiss={fecharMenu}
+        anchor={
+          <Appbar.Action
+            icon="menu"
+            iconColor="#FFFFFF"
+            onPress={abrirMenu}
+          />
+        }
+      >
+        <Menu.Item
+          onPress={() => navegarPara("/views/HomeView")}
+          title="Início"
+        />
+
+        <Menu.Item
+          onPress={() => navegarPara("/views/ContatoListView")}
+          title="Contatos"
+        />
+
+        <Menu.Item
+          onPress={() => navegarPara("/views/ContatoFormView")}
+          title="Novo contato"
+        />
+
+        <Divider />
+
+        <Menu.Item
+          onPress={() => navegarPara("/views/LoginView")}
+          title="Login / Sair"
+        />
+      </Menu>
+    </Appbar.Header>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 12,
-    backgroundColor: "#7B3F00",
-    alignItems: "center",
+  header: {
+    backgroundColor: "#4B2412",
   },
   title: {
     color: "#FFFFFF",
-    fontSize: 18,
     fontWeight: "bold",
+    fontSize: 20,
   },
 });

@@ -1,13 +1,11 @@
-ContatoListView.jsx
-
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import ContatoItem from "../components/ContatoItem";
-import ProdutosService from "../services/ProdutosService"; // Changed from ContatoService
+import ProdutosService from "../services/ProdutosService";
 
-export default function TelaA() {
+export default function ContatoListView() {
   const theme = useTheme();
   const router = useRouter();
   const [contatos, setContatos] = useState([]);

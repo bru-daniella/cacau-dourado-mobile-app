@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import { Alert, StyleSheet, View } from 'react-native';
 import AuthForm from '../components/AuthForm';
 import UsuarioEntity from '../entities/UsuarioEntity';
-import UsuariosService from '../services/UsuariosService';
 
 export default function LoginView() {
   const router = useRouter();
@@ -11,7 +10,7 @@ export default function LoginView() {
     try {
       if (data.isLogin) {
         // Lógica de Login
-        const usuario = await UsuariosService.login(data.email, data.password);
+        const usuario = await UsuarioService.login(data.email, data.password);
         if (usuario) {
           Alert.alert("Sucesso", "Login realizado com sucesso!");
           // Navegar para a tela principal (Home)
@@ -26,14 +25,14 @@ export default function LoginView() {
           return;
         }
 
-        const usuarioExistente = await UsuariosService.findByEmail(data.email);
+        const usuarioExistente = await UsuarioService.findByEmail(data.email);
         if (usuarioExistente) {
           Alert.alert("Erro", "Já existe um usuário com este e-mail.");
           return;
         }
 
         const novoUsuario = new UsuarioEntity(null, data.name, data.email, data.password);
-        await UsuariosService.save(novoUsuario);
+        await UsuarioService.save(novoUsuario);
         Alert.alert("Sucesso", "Usuário cadastrado com sucesso!");
         // Navegar para a tela principal (Home) após cadastro
         router.replace('/views/HomeView');

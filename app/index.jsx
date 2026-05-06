@@ -1,13 +1,8 @@
-<<<<<<< HEAD
+
 import { Redirect } from 'expo-router';
 import { StyleSheet } from "react-native";
-=======
 
-import { useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
->>>>>>> 9c9904db882a38b5b462a61c856d767dd1d902c7
 import { useTheme } from "react-native-paper";
-import { Redirect } from 'expo-router';
 
 export default function Index() {
   const theme = useTheme();
