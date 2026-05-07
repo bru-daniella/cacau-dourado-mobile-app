@@ -1,13 +1,15 @@
+import { useFonts } from "expo-font";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { Appbar, Divider, Menu } from "react-native-paper";
-
 export default function TopDropDownMenu() {
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
   const [cartVisible, setCartVisible] = useState(false);
   const router = useRouter();
-
+  const [loaded, error] = useFonts({
+    Whisper: require("../../assets/fonts/Whisper.ttf"),
+  });
   const abrirHamburguerMenu = () => setHamburguerVisible(true);
   const fecharHamburguerMenu = () => setHamburguerVisible(false);
 
