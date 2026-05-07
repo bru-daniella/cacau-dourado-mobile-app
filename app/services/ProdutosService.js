@@ -1,5 +1,3 @@
-
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import ContatoEntity from "../entities/ProdutoEntitys";
 
@@ -14,7 +12,7 @@ let contatos = [
     "https://i.pravatar.cc/150?img=1",
     true,
     "Trabalho",
-    "F"
+    "F",
   ),
   new ContatoEntity(
     "2",
@@ -24,7 +22,7 @@ let contatos = [
     "https://i.pravatar.cc/150?img=2",
     false,
     "Amigos",
-    "M"
+    "M",
   ),
   new ContatoEntity(
     "3",
@@ -34,12 +32,11 @@ let contatos = [
     "https://i.pravatar.cc/150?img=3",
     true,
     "Família",
-    "F"
+    "F",
   ),
 ];
 
 export default class ProdutosService {
-
   static async findAll() {
     const json = await AsyncStorage.getItem(STORAGE_KEY);
 

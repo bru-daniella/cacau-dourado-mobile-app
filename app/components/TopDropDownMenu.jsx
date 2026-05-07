@@ -4,32 +4,28 @@ import { StyleSheet } from "react-native";
 import { Appbar, Divider, Menu } from "react-native-paper";
 
 export default function TopDropDownMenu() {
-  const [visible, setVisible] = useState(false);
+  const [hamburgerVisible, setHamburguerVisible] = useState(false);
+  const [cartVisible, setCartVisible] = useState(false);
   const router = useRouter();
 
-  const abrirMenu = () => setVisible(true);
-  const fecharMenu = () => setVisible(false);
+  const abrirHamburguerMenu = () => setHamburguerVisible(true);
+  const fecharHamburguerMenu = () => setHamburguerVisible(false);
 
   const navegarPara = (rota) => {
-    fecharMenu();
+    fecharHamburguerMenu();
     router.push(rota);
   };
 
   return (
     <Appbar.Header style={styles.header}>
-      <Appbar.Content
-        title="Cacau Dourado"
-        titleStyle={styles.title}
-      />
-
       <Menu
-        visible={visible}
-        onDismiss={fecharMenu}
+        visible={hamburgerVisible}
+        onDismiss={fecharHamburguerMenu}
         anchor={
           <Appbar.Action
             icon="menu"
             iconColor="#FFFFFF"
-            onPress={abrirMenu}
+            onPress={abrirHamburguerMenu}
           />
         }
       >
@@ -55,6 +51,30 @@ export default function TopDropDownMenu() {
           title="Login / Sair"
         />
       </Menu>
+
+      <Appbar.Content
+        title="Cacau Dourado"
+        fontFamily="Whisper"
+        titleStyle={styles.title}
+      />
+      {/* <Searchbar placeholder="teste" style={styles.searchbar} /> */}
+
+      <Menu
+        visible={cartVisible}
+        onDismiss={() => setCartVisible(false)}
+        anchor={
+          <Appbar.Action
+            icon="cart"
+            iconColor="#FFF"
+            onPress={() => setCartVisible(true)}
+          />
+        }
+      >
+        <Menu.Item
+          onPress={() => navegarPara("/views/HomeView")}
+          title="Início"
+        />
+      </Menu>
     </Appbar.Header>
   );
 }
@@ -67,5 +87,16 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontWeight: "bold",
     fontSize: 20,
+    fontFamily: "Whisper",
+    textAlign: "center",
+  },
+  searchbar: {
+    flex: 1,
+    height: 40,
+  },
+  icon: {
+    borderColor: "#FFF",
+    borderWidth: 1,
+    borderRadius: 100,
   },
 });
