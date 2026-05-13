@@ -1,4 +1,3 @@
-
 function normalizeId(raw) {
   if (raw == null) return null;
   const t = typeof raw;
