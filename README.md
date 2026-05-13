@@ -1,6 +1,6 @@
 # Cacau Dourado - Mobile App 🍫
 
-Projeto acadêmico desenvolvido para a disciplina de [Nome da Disciplina/Curso] da [Nome da Instituição/Faculdade]. 
+Projeto acadêmico desenvolvido para a disciplina de Programação para Dispositivos móveis da universidade Newton Paiva Wyden. 
 
 Trata-se de um aplicativo mobile de e-commerce especializado na venda de doces artesanais e gourmet, desenvolvido utilizando React Native e Expo.
 
