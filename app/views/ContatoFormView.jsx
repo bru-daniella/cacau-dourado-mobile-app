@@ -3,7 +3,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Switch, Text, TextInput, useTheme } from "react-native-paper";
-
 import ContatoEntity from "../entities/ProdutoEntitys";
 import ProdutosService from "../services/ProdutosService";
 
