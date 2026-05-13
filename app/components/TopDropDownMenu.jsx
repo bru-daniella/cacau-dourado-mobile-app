@@ -3,13 +3,16 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { Appbar, Divider, Menu } from "react-native-paper";
+
 export default function TopDropDownMenu() {
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
   const [cartVisible, setCartVisible] = useState(false);
   const router = useRouter();
+  
   const [loaded, error] = useFonts({
     Whisper: require("../../assets/fonts/Whisper.ttf"),
   });
+  
   const abrirHamburguerMenu = () => setHamburguerVisible(true);
   const fecharHamburguerMenu = () => setHamburguerVisible(false);
 
@@ -36,14 +39,20 @@ export default function TopDropDownMenu() {
           title="Início"
         />
 
+        <Divider />
+        
+        {/* Tipos de doces */}
         <Menu.Item
-          onPress={() => navegarPara("/views/ContatoListView")}
-          title="Contatos"
+          onPress={() => navegarPara("/views/DocesListView?categoria=Brigadeiro")}
+          title="Brigadeiros"
         />
-
         <Menu.Item
-          onPress={() => navegarPara("/views/ContatoFormView")}
-          title="Novo contato"
+          onPress={() => navegarPara("/views/DocesListView?categoria=Beijinho")}
+          title="Beijinhos"
+        />
+        <Menu.Item
+          onPress={() => navegarPara("/views/DocesListView?categoria=Brownie")}
+          title="Brownies"
         />
 
         <Divider />
@@ -59,7 +68,6 @@ export default function TopDropDownMenu() {
         fontFamily="Whisper"
         titleStyle={styles.title}
       />
-      {/* <Searchbar placeholder="teste" style={styles.searchbar} /> */}
 
       <Menu
         visible={cartVisible}
@@ -73,8 +81,8 @@ export default function TopDropDownMenu() {
         }
       >
         <Menu.Item
-          onPress={() => navegarPara("/views/HomeView")}
-          title="Início"
+          onPress={() => navegarPara("/views/CarrinhoView")}
+          title="Ver Carrinho"
         />
       </Menu>
     </Appbar.Header>
@@ -91,14 +99,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Whisper",
     textAlign: "center",
-  },
-  searchbar: {
-    flex: 1,
-    height: 40,
-  },
-  icon: {
-    borderColor: "#FFF",
-    borderWidth: 1,
-    borderRadius: 100,
   },
 });

@@ -1,22 +1,38 @@
 import { useRouter } from 'expo-router';
 import { Alert, StyleSheet, View } from 'react-native';
 import AuthForm from '../components/AuthForm';
+import UsuarioService from '../services/UsuarioService';
 import UsuarioEntity from '../entities/UsuarioEntity';
+import { useState } from 'react';
 
 export default function LoginView() {
   const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
 
   const handleSubmit = async (data) => {
     try {
-      if (data.isLogin) {
+      if (isLogin) {
         // Lógica de Login
-        const usuario = await UsuarioService.login(data.email, data.password);
-        if (usuario) {
+        const usuario = await UsuarioService.findByEmail(data.email);
+        
+        if (!usuario) {
+            Alert.alert(
+                "Erro", 
+                "E-mail não existente. Redirecionando para cadastro...",
+                [
+                    { text: "OK", onPress: () => setIsLogin(false) }
+                ]
+            );
+            return; 
+        }
+
+        const usuarioLogado = await UsuarioService.login(data.email, data.password);
+        
+        if (usuarioLogado) {
           Alert.alert("Sucesso", "Login realizado com sucesso!");
-          // Navegar para a tela principal (Home)
           router.replace('/views/HomeView');
         } else {
-          Alert.alert("Erro", "Email ou senha incorretos.");
+          Alert.alert("Erro", "Senha incorreta.");
         }
       } else {
         // Lógica de Cadastro
@@ -45,7 +61,11 @@ export default function LoginView() {
 
   return (
     <View style={styles.container}>
-      <AuthForm onSubmit={handleSubmit} />
+      <AuthForm 
+        onSubmit={handleSubmit} 
+        isLogin={isLogin} 
+        onToggleMode={() => setIsLogin(!isLogin)} 
+      />
     </View>
   );
 }

@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { TextInput, Button, Text, Surface } from 'react-native-paper';
 
-export default function AuthForm({ onSubmit }) {
-  const [isLogin, setIsLogin] = useState(true);
+export default function AuthForm({ onSubmit, isLogin, onToggleMode }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
 
   const handleSubmit = () => {
     if (onSubmit) {
-      onSubmit({ email, password, name, isLogin });
+      onSubmit({ email, password, name });
     }
   };
 
@@ -53,7 +52,7 @@ export default function AuthForm({ onSubmit }) {
         {isLogin ? 'Entrar' : 'Cadastrar'}
       </Button>
 
-      <Button mode="text" onPress={() => setIsLogin(!isLogin)}>
+      <Button mode="text" onPress={onToggleMode}>
         {isLogin ? 'Não tem uma conta? Cadastre-se' : 'Já tem uma conta? Entre'}
       </Button>
     </Surface>
