@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { useTheme } from "react-native-paper";
-//import Banner from "../components/Banner";
 import { Banner, Button, HStack } from "@react-native-material/core";
+import { useRouter } from "expo-router";
 
 export default function HomeView() {
   const theme = useTheme();
-  const [visible, setVisible] = useState(true);
+  const router = useRouter();
+
   return (
     <View
       style={[style.container, { backgroundColor: theme.colors.background }]}
@@ -47,13 +48,17 @@ export default function HomeView() {
             textShadowRadius: 3,
           }}
           buttons={
-            <HStack>
-              <Button key="" variant="" title="" compact />
+            <HStack spacing={4}>
+              <Button 
+                variant="contained" 
+                color="#4B2412"
+                title="Ver Produtos" 
+                compact 
+                onPress={() => router.push('/views/DocesListView')}
+              />
             </HStack>
           }
         />
-        {/* <Banner visible={true} message="Erro ao carregar dados" onClose={() => setVisible(false)} imageSource={require("../../assets/images/banner1.jpg")}></Banner> */}
-        {/*<Text style={style.text}>Home</Text>*/}
       </View>
     </View>
   );

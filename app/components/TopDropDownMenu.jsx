@@ -61,6 +61,10 @@ export default function TopDropDownMenu() {
           onPress={() => navegarPara("/views/LoginView")}
           title="Login / Sair"
         />
+        <Menu.Item
+          onPress={() => navegarPara("/views/AdminView")}
+          title="Painel Admin"
+        />
       </Menu>
 
       <Appbar.Content

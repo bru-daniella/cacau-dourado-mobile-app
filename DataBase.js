@@ -1,4 +1,3 @@
-// app/services/DataBase.js
 import * as SQLite from "expo-sqlite";
 
 let db = null;
@@ -8,18 +7,27 @@ export async function getDatabase() {
     return db;
   }
 
-  db = await SQLite.openDatabaseAsync("locatech.db");
+  // Mudando o nome do banco para refletir a doceria
+  db = await SQLite.openDatabaseAsync("cacaudourado.db");
 
+  // Criação das tabelas
   await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS contatos (
+    PRAGMA journal_mode = WAL;
+    
+    CREATE TABLE IF NOT EXISTS usuarios (
       id TEXT PRIMARY KEY NOT NULL,
       nome TEXT NOT NULL,
-      email TEXT,
-      telefone TEXT,
-      avatar TEXT,
-      favorito INTEGER,
-      categoria TEXT,
-      sexo TEXT
+      email TEXT UNIQUE NOT NULL,
+      senha TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS produtos (
+      id TEXT PRIMARY KEY NOT NULL,
+      nome TEXT NOT NULL,
+      preco TEXT NOT NULL,
+      descricao TEXT,
+      imagem TEXT,
+      categoria TEXT NOT NULL
     );
   `);
 
