@@ -1,38 +1,32 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import ContatoEntity from "../entities/ProdutoEntitys";
+import ProdutoEntity from "../entities/ProdutoEntity";
 
-const STORAGE_KEY = "@contatos";
+const STORAGE_KEY = "@produtos";
 
-let contatos = [
-  new ContatoEntity(
+let produtos = [
+  new ProdutoEntity(
     "1",
     "Brigadeiro",
     "5,99",
-    "Um doce para adoçar seu dia! O brigadeiro é um clássico brasileiro feito com leite condensado, chocolate em pó, manteiga e granulado de chocolate. Ele é perfeito para festas, sobremesas ou simplesmente para matar a vontade de um docinho. Com sua textura cremosa e sabor irresistível, o brigadeiro é uma escolha deliciosa para qualquer ocasião.",
+    "Um doce para adoçar seu dia! O brigadeiro é um clássico brasileiro feito com leite condensado, chocolate em pó, manteiga e granulado de chocolate.",
     "https://i.pravatar.cc/150?img=1",
-    true,
-    "Trabalho",
-    "F",
+    "Brigadeiro"
   ),
-  new ContatoEntity(
+  new ProdutoEntity(
     "2",
     "Beijinho",
     "5,99",
-    "Um doce para adoçar seu dia! O beijinho é um clássico brasileiro feito com leite condensado, chocolate em pó e manteiga. Ele é perfeito para festas, sobremesas ou simplesmente para matar a vontade de um docinho. Com sua textura cremosa e sabor irresistível, o beijinho é uma escolha deliciosa para qualquer ocasião.",
+    "Um doce para adoçar seu dia! O beijinho é um clássico brasileiro feito com leite condensado, coco ralado e manteiga.",
     "https://i.pravatar.cc/150?img=2",
-    false,
-    "Amigos",
-    "M",
+    "Beijinho"
   ),
-  new ContatoEntity(
+  new ProdutoEntity(
     "3",
     "Brownie",
-    "5,99",
-    "Um doce para adoçar seu dia! O brownie é um clássico americano feito com chocolate, farinha, ovos e açúcar. Ele é perfeito para festas, sobremesas ou simplesmente para matar a vontade de um docinho. Com sua textura macia e sabor intenso, o brownie é uma escolha deliciosa para qualquer ocasião.",
+    "12,99",
+    "Um doce para adoçar seu dia! O brownie é um clássico americano feito com chocolate, farinha, ovos e açúcar. Textura macia e sabor intenso.",
     "https://i.pravatar.cc/150?img=3",
-    true,
-    "Família",
-    "F",
+    "Brownie"
   ),
 ];
 
@@ -42,14 +36,11 @@ export default class ProdutosService {
 
     if (json) {
       const lista = JSON.parse(json);
-      contatos = lista.map((item) => ContatoEntity.transforme(item));
-      return [...contatos];
+      produtos = lista.map((item) => ProdutoEntity.transforme(item));
+      return [...produtos];
     }
 
-    // primeira execução
-    //await this.saveAll(contatos);
-    //return [...contatos];
-    return [];
+    return [...produtos]; // Retorna mock initial se vazio
   }
 
   static async findById(id) {
@@ -57,22 +48,22 @@ export default class ProdutosService {
     return lista.find((item) => item.id === String(id)) ?? null;
   }
 
-  static async save(contato) {
+  static async save(produto) {
     const lista = await this.findAll();
 
-    const index = lista.findIndex((item) => item.id === contato.id);
+    const index = lista.findIndex((item) => item.id === produto.id);
 
     if (index >= 0) {
-      lista[index] = contato;
+      lista[index] = produto;
     } else {
-      lista.push(contato);
+      lista.push(produto);
     }
 
-    contatos = lista;
+    produtos = lista;
 
     await this.saveAll(lista);
 
-    return contato;
+    return produto;
   }
 
   static async saveAll(lista) {
@@ -81,6 +72,6 @@ export default class ProdutosService {
 
   static async clear() {
     await AsyncStorage.removeItem(STORAGE_KEY);
-    contatos = [];
+    produtos = [];
   }
 }
