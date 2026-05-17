@@ -1,4 +1,3 @@
-// app/services/DataBase.js
 import * as SQLite from "expo-sqlite";
 
 let db = null;
@@ -8,20 +7,34 @@ export async function getDatabase() {
     return db;
   }
 
-  db = await SQLite.openDatabaseAsync("locatech.db");
+  try {
+    // Mudando o nome do banco para refletir a doceria
+    db = await SQLite.openDatabaseAsync("cacaudourado.db");
 
-  await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS contatos (
-      id TEXT PRIMARY KEY NOT NULL,
-      nome TEXT NOT NULL,
-      email TEXT,
-      telefone TEXT,
-      avatar TEXT,
-      favorito INTEGER,
-      categoria TEXT,
-      sexo TEXT
-    );
-  `);
+    // Criação das tabelas
+    await db.execAsync(`
+      PRAGMA journal_mode = WAL;
+      
+      CREATE TABLE IF NOT EXISTS usuarios (
+        id TEXT PRIMARY KEY NOT NULL,
+        nome TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        senha TEXT NOT NULL
+      );
 
-  return db;
+      CREATE TABLE IF NOT EXISTS produtos (
+        id TEXT PRIMARY KEY NOT NULL,
+        nome TEXT NOT NULL,
+        preco TEXT NOT NULL,
+        descricao TEXT,
+        imagem TEXT,
+        categoria TEXT NOT NULL
+      );
+    `);
+
+    return db;
+  } catch (error) {
+    console.error("Erro ao inicializar banco de dados: ", error);
+    throw error;
+  }
 }

@@ -1,76 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Image, Alert } from "react-native";
-import { Text, Card, Button, useTheme } from "react-native-paper";
+import { View, StyleSheet, FlatList, Alert } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 import { useLocalSearchParams } from "expo-router";
 import ProdutosService from "../services/ProdutosService";
+import ProductCard from "../components/ProductCard";
 
+// Esta tela mostra a lista de doces para o cliente comprar
 export default function DocesListView() {
+  // Pega a categoria selecionada (ex: "Brigadeiro") que vem da URL
   const { categoria } = useLocalSearchParams();
+  
+  // Guarda a lista de doces que vai aparecer na tela
   const [doces, setDoces] = useState([]);
   const theme = useTheme();
 
+  // Executa assim que a tela abre ou quando a categoria muda
   useEffect(() => {
-    // Simulando a busca de produtos com base na categoria 
-    // Como ProdutosService.js foi feito para contatos, 
-    // estamos adaptando e pegando as propriedades do mock atual
     const carregarProdutos = async () => {
-      const produtos = await ProdutosService.findAll();
-      // Se não houver, vamos usar o array mockado (neste projeto ele está comentado ou inicializa vazio, 
-      // mas vamos adicionar itens padrões caso seja vazio)
-      if (produtos.length === 0) {
-          const mockDoces = [
-              { id: '1', nome: 'Brigadeiro Tradicional', preco: '5,99', categoria: 'Brigadeiro', imagem: 'https://cdn.pixabay.com/photo/2017/01/11/11/33/cake-1971556_1280.jpg' },
-              { id: '2', nome: 'Brigadeiro Gourmet', preco: '7,99', categoria: 'Brigadeiro', imagem: 'https://cdn.pixabay.com/photo/2016/09/06/16/04/brigadeiro-1649377_1280.jpg' },
-              { id: '3', nome: 'Beijinho de Coco', preco: '5,99', categoria: 'Beijinho', imagem: 'https://cdn.pixabay.com/photo/2019/12/21/20/19/coconut-candy-4711239_1280.jpg' },
-              { id: '4', nome: 'Brownie de Chocolate', preco: '9,99', categoria: 'Brownie', imagem: 'https://cdn.pixabay.com/photo/2014/11/28/08/03/brownie-548591_1280.jpg' },
-              { id: '5', nome: 'Brownie com Sorvete', preco: '14,99', categoria: 'Brownie', imagem: 'https://cdn.pixabay.com/photo/2017/02/15/10/39/brownies-2068212_1280.jpg' },
-          ];
-          const docesFiltrados = categoria ? mockDoces.filter(d => d.categoria === categoria) : mockDoces;
-          setDoces(docesFiltrados);
-      } else {
-         const docesFiltrados = categoria ? produtos.filter(d => d.nome.includes(categoria)) : produtos;
-         setDoces(docesFiltrados);
-      }
+      // 1. Busca todos os produtos do banco de dados
+      const todosProdutos = await ProdutosService.findAll();
+      
+      // 2. Filtra os produtos: Se tiver uma categoria escolhida, mostra só os da categoria. 
+      // Se não, mostra todos.
+      const docesFiltrados = categoria 
+        ? todosProdutos.filter(produto => produto.categoria === categoria) 
+        : todosProdutos;
+        
+      // 3. Salva os produtos filtrados para mostrar na tela
+      setDoces(docesFiltrados);
     };
     
     carregarProdutos();
   }, [categoria]);
 
-  const adicionarAoCarrinho = (item) => {
-      Alert.alert("Sucesso", `${item.nome} foi adicionado ao carrinho!`);
-      // Aqui você poderia atualizar o estado de um contexto global (Ex: CartContext)
+  // Função chamada quando o usuário clica no botão "Adicionar ao Carrinho"
+  const adicionarAoCarrinho = (produtoSelecionado) => {
+      Alert.alert("Sucesso", `${produtoSelecionado.nome} foi adicionado ao carrinho!`);
   };
-
-  const renderDoce = ({ item }) => (
-    <Card style={styles.card}>
-      <Card.Cover source={{ uri: item.imagem || 'https://via.placeholder.com/150' }} />
-      <Card.Content style={styles.cardContent}>
-        <Text variant="titleLarge">{item.nome}</Text>
-        <Text variant="bodyMedium" style={{color: '#4B2412', fontWeight: 'bold'}}>R$ {item.preco}</Text>
-      </Card.Content>
-      <Card.Actions>
-        <Button mode="contained" buttonColor="#4B2412" onPress={() => adicionarAoCarrinho(item)}>
-          Adicionar ao Carrinho
-        </Button>
-      </Card.Actions>
-    </Card>
-  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Título da página */}
       <Text variant="headlineMedium" style={styles.titulo}>
         {categoria ? `Nossos ${categoria}s` : 'Nossos Doces'}
       </Text>
+
+      {/* Lista que repete o cartão para cada doce encontrado */}
       <FlatList
         data={doces}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderDoce}
+        keyExtractor={(produto) => produto.id.toString()}
+        renderItem={({ item }) => (
+          <ProductCard produto={item} onAddToCart={adicionarAoCarrinho} />
+        )}
         contentContainerStyle={styles.list}
       />
     </View>
   );
 }
 
+// Estilos visuais da tela (cores, margens, tamanhos)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -84,13 +72,5 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 20,
-  },
-  card: {
-    marginBottom: 16,
-    backgroundColor: "#FFF"
-  },
-  cardContent: {
-    marginTop: 8,
-    gap: 4
   }
 });
