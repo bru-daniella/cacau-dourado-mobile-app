@@ -3,7 +3,7 @@ import { Alert, StyleSheet, View } from 'react-native';
 import AuthForm from '../components/AuthForm';
 import UsuarioService from '../services/UsuarioService';
 import UsuarioEntity from '../entities/UsuarioEntity';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // Esta é a tela principal de autenticação: ela serve tanto para "Entrar" (Login) quanto para "Cadastrar"
 export default function LoginView() {
@@ -11,6 +11,11 @@ export default function LoginView() {
   
   // Variável que diz se a tela está no modo "Login" (true) ou "Cadastro" (false)
   const [isLogin, setIsLogin] = useState(true);
+
+  // Assim que a tela de login abrir, garantimos que o Admin existe no banco
+  useEffect(() => {
+    UsuarioService.initAdminUser();
+  }, []);
 
   // Função chamada quando o usuário clica no botão de confirmar (Entrar ou Cadastrar)
   const handleSubmit = async (dadosDoFormulario) => {

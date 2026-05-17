@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { View, StyleSheet, FlatList, Alert } from "react-native";
-import { Text, Button, Card, useTheme } from "react-native-paper";
+import { Text, Button, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
+import CartItemCard from "../components/CartItemCard";
 
 // Esta tela mostra os itens que o cliente quer comprar e permite finalizar o pedido
 export default function CarrinhoView() {
@@ -48,15 +49,11 @@ export default function CarrinhoView() {
 
         // --- VISUAL QUANDO TEM ITENS NO CARRINHO ---
         <View style={{ flex: 1 }}>
-          {/* Lista os itens do carrinho um por um */}
+          {/* Lista os itens do carrinho um por um usando o componente de cartão */}
           <FlatList
             data={itensCarrinho}
             keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item: produto }) => (
-              <Card style={styles.cartaoProduto}>
-                <Card.Title title={produto.nome} subtitle={`R$ ${produto.preco}`} />
-              </Card>
-            )}
+            renderItem={({ item: produto }) => <CartItemCard produto={produto} />}
           />
           
           {/* Botão de finalizar compra */}
@@ -96,8 +93,5 @@ const styles = StyleSheet.create({
   botaoAcao: {
     marginTop: 16,
     paddingVertical: 8,
-  },
-  cartaoProduto: {
-    marginBottom: 8, // Espaço entre os produtos na lista
   }
 });

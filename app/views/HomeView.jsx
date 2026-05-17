@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import { useTheme } from "react-native-paper";
 import { Banner, Button, HStack } from "@react-native-material/core";
 import { useRouter } from "expo-router";
+import UsuarioService from "../services/UsuarioService";
 
 export default function HomeView() {
   const theme = useTheme();
   const router = useRouter();
+
+  // Tenta criar o admin assim que a HomeView for carregada pela primeira vez.
+  // Isso resolve o problema caso o admin não seja criado ao abrir a tela de Login
+  useEffect(() => {
+    UsuarioService.initAdminUser();
+  }, []);
 
   return (
     <View

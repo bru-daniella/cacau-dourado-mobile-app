@@ -22,7 +22,7 @@ export default class ProdutoEntity {
     nome,
     preco,
     descricao,
-    imagem,
+    imagem, // Agora pode ser uma string (uma imagem) ou JSON de array de imagens
     categoria
   ) {
     const idNorm = normalizeId(id);
@@ -37,6 +37,24 @@ export default class ProdutoEntity {
 
   get key() {
     return String(this.id);
+  }
+
+  // Método auxiliar para garantir que sempre retornamos um array de imagens
+  get imagensArray() {
+    try {
+      // Se for uma string JSON válida de um array, parseamos
+      if (typeof this.imagem === 'string' && this.imagem.startsWith('[')) {
+        return JSON.parse(this.imagem);
+      }
+      // Se for apenas uma string normal (URL de uma única imagem), colocamos dentro de um array
+      if (typeof this.imagem === 'string' && this.imagem.length > 0) {
+        return [this.imagem];
+      }
+      return [];
+    } catch (e) {
+      // Em caso de erro de parse, tentamos retornar como array de 1 item
+      return [this.imagem];
+    }
   }
 
   static transforme(d) {

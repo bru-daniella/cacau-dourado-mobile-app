@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList, Alert } from "react-native";
-import { Text, Card, Button, useTheme } from "react-native-paper";
+import { Text, useTheme } from "react-native-paper";
 import { useLocalSearchParams } from "expo-router";
 import ProdutosService from "../services/ProdutosService";
+import ProductCard from "../components/ProductCard";
 
 // Esta tela mostra a lista de doces para o cliente comprar
 export default function DocesListView() {
@@ -37,27 +38,6 @@ export default function DocesListView() {
       Alert.alert("Sucesso", `${produtoSelecionado.nome} foi adicionado ao carrinho!`);
   };
 
-  // Como cada doce deve aparecer na lista (Visual do Cartão do Doce)
-  const renderDoce = ({ item: produto }) => (
-    <Card style={styles.card}>
-      {/* Imagem do produto */}
-      <Card.Cover source={{ uri: produto.imagem || 'https://via.placeholder.com/150' }} />
-      
-      {/* Informações do produto */}
-      <Card.Content style={styles.cardContent}>
-        <Text variant="titleLarge">{produto.nome}</Text>
-        <Text variant="bodyMedium" style={styles.textoPreco}>R$ {produto.preco}</Text>
-      </Card.Content>
-      
-      {/* Botões do produto */}
-      <Card.Actions>
-        <Button mode="contained" buttonColor="#4B2412" onPress={() => adicionarAoCarrinho(produto)}>
-          Adicionar ao Carrinho
-        </Button>
-      </Card.Actions>
-    </Card>
-  );
-
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Título da página */}
@@ -69,7 +49,9 @@ export default function DocesListView() {
       <FlatList
         data={doces}
         keyExtractor={(produto) => produto.id.toString()}
-        renderItem={renderDoce}
+        renderItem={({ item }) => (
+          <ProductCard produto={item} onAddToCart={adicionarAoCarrinho} />
+        )}
         contentContainerStyle={styles.list}
       />
     </View>
@@ -90,17 +72,5 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 20,
-  },
-  card: {
-    marginBottom: 16,
-    backgroundColor: "#FFF"
-  },
-  cardContent: {
-    marginTop: 8,
-    gap: 4
-  },
-  textoPreco: {
-    color: '#4B2412', 
-    fontWeight: 'bold'
   }
 });

@@ -1,13 +1,20 @@
 import { Redirect } from 'expo-router';
 import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
+import { useEffect } from "react";
+import UsuarioService from "./services/UsuarioService";
 
 export default function Index() {
   const theme = useTheme();
   
-  // Aqui estamos forçando o redirecionamento inicial para a tela de login.
-  // Em uma aplicação real, você verificaria se o usuário já tem uma sessão
-  // armazenada (ex: um token no AsyncStorage) antes de redirecionar.
+  // Tenta criar o admin logo no ponto de entrada do app, antes de qualquer redirecionamento
+  useEffect(() => {
+    const inicializar = async () => {
+      await UsuarioService.initAdminUser();
+    };
+    inicializar();
+  }, []);
+
   return <Redirect href="/views/LoginView" />;
 }
 

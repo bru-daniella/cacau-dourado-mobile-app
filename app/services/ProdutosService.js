@@ -1,14 +1,20 @@
 import { getDatabase } from "../../DataBase";
 import ProdutoEntity from "../entities/ProdutoEntity";
 
-// Lista de produtos iniciais para popular o banco de dados na primeira vez que o app rodar
+// Lista de produtos iniciais para popular o banco de dados na primeira vez que o app rodar.
+// AGORA USANDO OS NOMES DAS IMAGENS LOCAIS QUE FORAM ATUALIZADAS NO DICIONÁRIO
 const produtosIniciais = [
   new ProdutoEntity(
     "1",
     "Brigadeiro",
     "5,99",
     "Um doce para adoçar seu dia! O brigadeiro é um clássico brasileiro feito com leite condensado, chocolate em pó, manteiga e granulado de chocolate.",
-    "https://i.pravatar.cc/150?img=1",
+    JSON.stringify([
+      "brigadeiro-1", 
+      "brigadeiro-2",
+      "brigadeiro-3",
+      "brigadeiro-4"
+    ]),
     "Brigadeiro"
   ),
   new ProdutoEntity(
@@ -16,7 +22,11 @@ const produtosIniciais = [
     "Beijinho",
     "5,99",
     "Um doce para adoçar seu dia! O beijinho é um clássico brasileiro feito com leite condensado, coco ralado e manteiga.",
-    "https://i.pravatar.cc/150?img=2",
+    JSON.stringify([
+      "beijinho-1",
+      "beijinho-2",
+      "beijinho-3",
+    ]),
     "Beijinho"
   ),
   new ProdutoEntity(
@@ -24,7 +34,12 @@ const produtosIniciais = [
     "Brownie",
     "12,99",
     "Um doce para adoçar seu dia! O brownie é um clássico americano feito com chocolate, farinha, ovos e açúcar. Textura macia e sabor intenso.",
-    "https://i.pravatar.cc/150?img=3",
+    JSON.stringify([
+      "brownie-1",
+      "brownie-2",
+      "brownie-3",
+      "brownie-4",
+    ]),
     "Brownie"
   ),
 ];
