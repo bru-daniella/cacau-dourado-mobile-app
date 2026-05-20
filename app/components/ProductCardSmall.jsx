@@ -40,7 +40,7 @@ export default function ProductCard({ produto, onAddToCart }) {
   };
 
   return (
-    <Card style={styles.card}>
+    <Card style={styles.cards}>
       {/* Componente de Scroll Lateral para Imagens */}
       <View style={styles.carrosselContainer}>
         <ScrollView
@@ -69,19 +69,21 @@ export default function ProductCard({ produto, onAddToCart }) {
       {/* Informações do produto */}
       <Card.Content style={styles.cardContent}>
         <Text variant="titleLarge">{produto.nome}</Text>
+        <Text variant="titleSmall">{produto.descricao}</Text>
         <Text variant="bodyMedium" style={styles.textoPreco}>
           R$ {produto.preco}
         </Text>
       </Card.Content>
 
       {/* Botões do produto */}
-      <Card.Actions>
+      <Card.Actions style={styles.buttonStyle}>
         <Button
           mode="contained"
-          buttonColor="#4B2412"
+          buttonColor="#3E2723"
+          textColor="#FFF8E1"
           onPress={() => onAddToCart(produto)}
         >
-          Adicionar ao Carrinho
+          +
         </Button>
       </Card.Actions>
     </Card>
@@ -89,18 +91,20 @@ export default function ProductCard({ produto, onAddToCart }) {
 }
 
 const styles = StyleSheet.create({
-  card: {
-    marginBottom: 16,
+  cards: {
+    marginBottom: 100,
     backgroundColor: "#FFF",
+    margin: 12,
+    maxWidth: 150,
     overflow: "hidden", // Garante que a imagem não vaze dos cantos redondos do cartão
   },
   carrosselContainer: {
-    height: 200, // Altura fixa para a imagem
+    height: 185, // Altura fixa para a imagem
     width: "100%",
   },
   imagemCarrossel: {
-    width: width - 32, // Largura da tela menos os paddings laterais (16 de cada lado)
-    height: 200,
+    width: width - 120,
+    height: 180,
   },
   indicadorScroll: {
     position: "absolute",
@@ -122,5 +126,8 @@ const styles = StyleSheet.create({
   textoPreco: {
     color: "#4B2412",
     fontWeight: "bold",
+  },
+  buttonStyle: {
+    justifyContent: "flex-end",
   },
 });
