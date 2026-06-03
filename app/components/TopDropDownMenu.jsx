@@ -127,8 +127,8 @@ export default function TopDropDownMenu() {
             iconColor="#FFFFFF"
             onPress={() => setCartVisible(true)}
           />
-        }
-      >
+        }>
+        
         <Menu.Item
           onPress={() => navegarPara("/views/CarrinhoView")}
           title="Ver Carrinho"
