@@ -2,6 +2,8 @@ import { Slot } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { MD3LightTheme, PaperProvider } from "react-native-paper";
 import TopDropDownMenu from "./components/TopDropDownMenu";
+import { CartProvider } from "./contexts/CartContext";
+import { DatabaseProvider } from "./contexts/DatabaseContext"; // Importando nosso "Porteiro"
 
 const tema = {
   ...MD3LightTheme,
@@ -17,15 +19,21 @@ const tema = {
 
 export default function RootLayout() {
   return (
-    <PaperProvider theme={tema}>
-      <View style={styles.container}>
-        <TopDropDownMenu />
+    // O DatabaseProvider agora "abraça" tudo.
+    // O app só será renderizado quando o banco de dados estiver pronto.
+    <DatabaseProvider>
+      <CartProvider>
+        <PaperProvider theme={tema}>
+          <View style={styles.container}>
+            <TopDropDownMenu />
 
-        <View style={styles.content}>
-          <Slot />
-        </View>
-      </View>
-    </PaperProvider>
+            <View style={styles.content}>
+              <Slot />
+            </View>
+          </View>
+        </PaperProvider>
+      </CartProvider>
+    </DatabaseProvider>
   );
 }
 

@@ -1,42 +1,52 @@
 import { useFonts } from "expo-font";
 import { usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
-import { Appbar, Divider, Menu } from "react-native-paper";
+import { StyleSheet, View } from "react-native";
+import { Appbar, Divider, Menu, Badge } from "react-native-paper";
 import UsuarioService from "../services/UsuarioService";
+import ProdutosService from "../services/ProdutosService";
+import { useCart } from "../contexts/CartContext";
 
 export default function TopDropDownMenu() {
-  const [loaded, error] = useFonts({
+  useFonts({
     Whisper: require("../../assets/fonts/Whisper.ttf"),
   });
 
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
-  const [cartVisible, setCartVisible] = useState(false);
-
   const [isLogado, setIsLogado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [categoriasMenu, setCategoriasMenu] = useState([]);
 
   const router = useRouter();
   const pathname = usePathname();
+  const { itens } = useCart();
+  const quantidadeTotalCarrinho = itens.reduce((total, item) => total + item.quantidade, 0);
 
   useEffect(() => {
-    const verificarUsuarioLogado = async () => {
-      const usuarioLogado = UsuarioService.getUsuarioLogado();
+    const buscarCategorias = async () => {
+      try {
+        const todosProdutos = await ProdutosService.findAll();
+        const categoriasUnicas = [...new Set(todosProdutos.map(p => p.categoria))].filter(Boolean);
+        setCategoriasMenu(categoriasUnicas);
+      } catch (e) {
+        console.log("Erro ao buscar categorias para o menu", e);
+      }
+    };
+    
+    buscarCategorias();
+  }, []);
 
+  useEffect(() => {
+    const verificarUsuarioLogado = () => {
+      const usuarioLogado = UsuarioService.getUsuarioLogado();
       if (usuarioLogado) {
         setIsLogado(true);
-
-        if (usuarioLogado.email === "admin@cacaudourado.com") {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
+        setIsAdmin(usuarioLogado.email === "admin@cacaudourado.com");
       } else {
         setIsLogado(false);
         setIsAdmin(false);
       }
     };
-
     verificarUsuarioLogado();
   }, [pathname]);
 
@@ -45,7 +55,6 @@ export default function TopDropDownMenu() {
 
   const navegarPara = (rota) => {
     fecharHamburguerMenu();
-    setCartVisible(false);
     router.push(rota);
   };
 
@@ -73,28 +82,15 @@ export default function TopDropDownMenu() {
           onPress={() => navegarPara("/views/HomeView")}
           title="Início"
         />
-
         <Divider />
-
-        <Menu.Item
-          onPress={() =>
-            navegarPara("/views/DocesListView?categoria=Brigadeiro")
-          }
-          title="Brigadeiros"
-        />
-
-        <Menu.Item
-          onPress={() => navegarPara("/views/DocesListView?categoria=Beijinho")}
-          title="Beijinhos"
-        />
-
-        <Menu.Item
-          onPress={() => navegarPara("/views/DocesListView?categoria=Brownie")}
-          title="Brownies"
-        />
-
+        {categoriasMenu.map(categoria => (
+          <Menu.Item
+            key={categoria}
+            onPress={() => navegarPara(`/views/DocesListView?categoria=${categoria}`)}
+            title={`${categoria}s`}
+          />
+        ))}
         <Divider />
-
         {!isLogado ? (
           <Menu.Item
             onPress={() => navegarPara("/views/LoginView")}
@@ -103,7 +99,6 @@ export default function TopDropDownMenu() {
         ) : (
           <Menu.Item onPress={fazerLogout} title="Sair da conta" />
         )}
-
         {isAdmin && (
           <>
             <Divider />
@@ -115,25 +110,21 @@ export default function TopDropDownMenu() {
           </>
         )}
       </Menu>
-
       <Appbar.Content title="Cacau Dourado" titleStyle={styles.title} />
-
-      <Menu
-        visible={cartVisible}
-        onDismiss={() => setCartVisible(false)}
-        anchor={
-          <Appbar.Action
-            icon="cart"
-            iconColor="#FFFFFF"
-            onPress={() => setCartVisible(true)}
-          />
-        }>
-        
-        <Menu.Item
+      
+      {/* Ícone do carrinho corrigido */}
+      <View>
+        <Appbar.Action
+          icon="cart"
+          iconColor="#FFFFFF"
           onPress={() => navegarPara("/views/CarrinhoView")}
-          title="Ver Carrinho"
         />
-      </Menu>
+        {quantidadeTotalCarrinho > 0 && (
+          <Badge size={20} style={styles.badge}>
+            {quantidadeTotalCarrinho}
+          </Badge>
+        )}
+      </View>
     </Appbar.Header>
   );
 }
@@ -153,4 +144,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#4B2412",
   },
+  badge: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: '#FF6347',
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });

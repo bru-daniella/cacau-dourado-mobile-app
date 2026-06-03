@@ -1,27 +1,52 @@
-import { Banner, Button } from "@react-native-material/core";
-import { useRouter } from "expo-router";
+import { Banner } from "@react-native-material/core";
 import { useEffect, useState } from "react";
-import { Text } from "react-native-paper";
-
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, ScrollView } from "react-native";
 import { useTheme } from "react-native-paper";
-import ProductCardSmall from "../components/ProductCardSmall";
 import UsuarioService from "../services/UsuarioService";
+import ProdutosService from "../services/ProdutosService";
+import ProductCarousel from "../components/ProductCarousel"; 
+import { useDatabase } from "../contexts/DatabaseContext"; // Adiciona a checagem do banco
+
 export default function HomeView() {
   const theme = useTheme();
-  const router = useRouter();
+  
+  // Pegamos o status do banco de dados (se já terminou de carregar)
+  const { isDbReady } = useDatabase();
 
-  // Tenta criar o admin assim que a HomeView for carregada pela primeira vez.
-  // Isso resolve o problema caso o admin não seja criado ao abrir a tela de Login
   useEffect(() => {
-    UsuarioService.initAdminUser();
-  }, []);
+    // Só tenta criar o admin se o banco estiver pronto
+    if (isDbReady) {
+      UsuarioService.initAdminUser();
+    }
+  }, [isDbReady]);
 
-  // Guarda a lista de doces que vai aparecer na tela
-  const [doces, setDoces] = useState([]);
-  const produto = { imagensArray: [] };
+  const [todosOsDoces, setTodosOsDoces] = useState([]);
+  const [recomendacoes, setRecomendacoes] = useState([]);
+
+  useEffect(() => {
+    const carregarProdutos = async () => {
+      // Verifica de novo só pra ter certeza
+      if (!isDbReady) return;
+
+      const produtosDoBanco = await ProdutosService.findAll();
+      setTodosOsDoces(produtosDoBanco);
+
+      const recomendacoesEmbaralhadas = [...produtosDoBanco].sort(() => 0.5 - Math.random());
+      setRecomendacoes(recomendacoesEmbaralhadas.slice(0, 5));
+    };
+
+    carregarProdutos();
+  }, [isDbReady]); // Só roda quando o banco diz que está pronto
+
+  const categoriasUnicas = [...new Set(todosOsDoces.map(doce => doce.categoria))].filter(Boolean);
+
+  // Se não estiver pronto, nem tenta desenhar a tela ainda
+  if (!isDbReady) {
+    return null; 
+  }
+
   return (
-    <View style={[style.container]}>
+    <ScrollView style={[style.container, { backgroundColor: theme.colors.background }]}>
       <View style={style.conteudo}>
         <Banner
           style={style.banner}
@@ -59,88 +84,40 @@ export default function HomeView() {
             textShadowRadius: 3,
           }}
         />
-        <View style={style.divisaosubtBtn}>
-          <Text style={style.subtitulo} variant="titleSmall">
-            Para você
-          </Text>
-          <Button
-            style={style.button}
-            variant="text"
-            title="Ver tudo"
-            color="#77574D"
-            uppercase={false}
-            compact
-            onPress={() => router.push("/views/DocesListView")}
-          />
-        </View>
-      </View>
+        
+        <ProductCarousel 
+          titulo="Para Você"
+          produtos={recomendacoes}
+          verTudoLink="/views/DocesListView"
+        />
 
-      <View style={style.cardView}>
-        <ProductCardSmall
-          style={style.card}
-          produto={{
-            imagensArray: [
-              "https://i.panelinha.com.br/i1/64-bk-7265-cocada.webp",
-            ],
-            nome: "Hello",
-            preco: "100,00",
-          }}
-        ></ProductCardSmall>
-        <ProductCardSmall
-          style={style.card}
-          produto={{
-            imagensArray: [
-              "https://i.panelinha.com.br/i1/64-bk-7265-cocada.webp",
-            ],
-            nome: "Hello",
-            preco: "100,00",
-          }}
-        ></ProductCardSmall>
+        {categoriasUnicas.map(categoria => (
+          <ProductCarousel 
+            key={categoria}
+            titulo={`Nossos ${categoria}s`}
+            produtos={todosOsDoces.filter(p => p.categoria === categoria)}
+            verTudoLink={`/views/DocesListView?categoria=${categoria}`}
+          />
+        ))}
+
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const style = StyleSheet.create({
-  subtitulo: {
-    fontFamily: "Georgia",
-    fontWeight: "bold",
-    padding: 15,
-    fontSize: 20,
-    color: "#3e2723",
-    display: "flex",
-    flex: 1,
-  },
   container: {
     flex: 1,
-    backgroundColor: "#fff8f6",
   },
   conteudo: {
     flex: 1,
     backgroundColor: "#fff8f6",
     gap: 10,
+    paddingTop: 10,
+    paddingBottom: 20,
   },
   banner: {
     backgroundColor: "#fff8f6",
-  },
-  button: {
-    textDecorationLine: "underline",
-    margin: 10,
-  },
-  text: {
-    fontSize: 40,
-    justifyContent: "center",
-    textAlign: "center",
-    color: "#FFFF",
-  },
-  cardView: {
-    flexDirection: "row",
-  },
-  divisaosubtBtn: {
-    flexDirection: "row",
-  },
-  card: {
-    flex: 1,
-    maxWidth: 1,
+    marginHorizontal: 16,
   },
 });
