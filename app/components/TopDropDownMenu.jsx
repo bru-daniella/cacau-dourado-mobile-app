@@ -1,3 +1,4 @@
+import { useFonts } from "expo-font";
 import { usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
@@ -5,6 +6,10 @@ import { Appbar, Divider, Menu } from "react-native-paper";
 import UsuarioService from "../services/UsuarioService";
 
 export default function TopDropDownMenu() {
+  const [loaded, error] = useFonts({
+    Whisper: require("../../assets/fonts/Whisper.ttf"),
+  });
+
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
   const [cartVisible, setCartVisible] = useState(false);
 
@@ -72,7 +77,9 @@ export default function TopDropDownMenu() {
         <Divider />
 
         <Menu.Item
-          onPress={() => navegarPara("/views/DocesListView?categoria=Brigadeiro")}
+          onPress={() =>
+            navegarPara("/views/DocesListView?categoria=Brigadeiro")
+          }
           title="Brigadeiros"
         />
 
@@ -94,10 +101,7 @@ export default function TopDropDownMenu() {
             title="Entrar / Cadastrar"
           />
         ) : (
-          <Menu.Item
-            onPress={fazerLogout}
-            title="Sair da conta"
-          />
+          <Menu.Item onPress={fazerLogout} title="Sair da conta" />
         )}
 
         {isAdmin && (
@@ -112,10 +116,7 @@ export default function TopDropDownMenu() {
         )}
       </Menu>
 
-      <Appbar.Content
-        title="Cacau Dourado"
-        titleStyle={styles.title}
-      />
+      <Appbar.Content title="Cacau Dourado" titleStyle={styles.title} />
 
       <Menu
         visible={cartVisible}
@@ -143,6 +144,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#FFFFFF",
+    fontFamily: "Whisper",
     fontWeight: "bold",
     fontSize: 20,
     textAlign: "center",
