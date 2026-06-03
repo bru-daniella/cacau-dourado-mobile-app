@@ -20,8 +20,7 @@ export default function DocesListView() {
       // 1. Busca todos os produtos do banco de dados
       const todosProdutos = await ProdutosService.findAll();
 
-      // 2. Filtra os produtos: Se tiver uma categoria escolhida, mostra só os da categoria.
-      // Se não, mostra todos.
+      // 2. Filtra os produtos: Se tiver uma categoria escolhida, mostra só os da categoria. Se não, mostra todos.
       const docesFiltrados = categoria
         ? todosProdutos.filter((produto) => produto.categoria === categoria)
         : todosProdutos;
@@ -69,12 +68,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  
   titulo: {
     textAlign: "center",
     marginVertical: 16,
     color: "#4B2412",
     fontWeight: "bold",
   },
+  
   list: {
     paddingBottom: 20,
   },
