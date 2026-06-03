@@ -2,7 +2,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, FlatList, StyleSheet, View } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import ProductCardSmall from "../components/ProductCardSmall.jsx";
+import ProductCard from "../components/ProductCard.jsx";
 import ProdutosService from "../services/ProdutosService";
 
 // Esta tela mostra a lista de doces para o cliente comprar
@@ -55,7 +55,7 @@ export default function DocesListView() {
         data={doces}
         keyExtractor={(produto) => produto.id.toString()}
         renderItem={({ item }) => (
-          <ProductCardSmall produto={item} onAddToCart={adicionarAoCarrinho} />
+          <ProductCard produto={item} onAddToCart={adicionarAoCarrinho} />
         )}
         contentContainerStyle={styles.list}
       />
