@@ -35,6 +35,11 @@ export default class UsuarioService {
     return this.usuarioLogadoAtual;
   }
 
+  // Define quem é o usuário logado agora
+  static setUsuarioLogado(usuario) {
+    this.usuarioLogadoAtual = usuario;
+  }
+
   // Faz o logout do usuário
   static logout() {
     this.usuarioLogadoAtual = null;

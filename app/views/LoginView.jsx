@@ -67,15 +67,23 @@ export default function LoginView() {
         }
 
         // 3. Cria a "ficha" do novo usuário e salva no banco de dados
-        const novoUsuario = new UsuarioEntity(null, dadosDoFormulario.name, dadosDoFormulario.email, dadosDoFormulario.password);
+        const novoUsuario = new UsuarioEntity(
+          null,
+          dadosDoFormulario.name,
+          dadosDoFormulario.email,
+          dadosDoFormulario.password
+        );
+
         await UsuarioService.save(novoUsuario);
-        
+
+        // 4. Após cadastrar, já deixamos o novo usuário logado no app
+        UsuarioService.setUsuarioLogado(novoUsuario);
+
         Alert.alert("Sucesso", "Sua conta foi criada com sucesso!");
-        
-        // 4. Manda o novo usuário direto para a página inicial
+
+        // 5. Manda o novo usuário direto para a página inicial
         router.replace('/views/HomeView');
-      }
-      
+    }
     } catch (error) {
       console.error(error); // Mostra o erro real no console para o desenvolvedor ver
       Alert.alert("Ops", "Ocorreu um erro inesperado. Tente novamente mais tarde.");
