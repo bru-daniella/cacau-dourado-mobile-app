@@ -60,10 +60,12 @@ export default function DocesListView() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       {/* Título da página */}
       <Text variant="headlineMedium" style={styles.titulo}>
-        {categoria ? `Nossos ${categoria}s` : 'Nossos Doces'}
+        {categoria ? `Nossos ${categoria}s` : "Nossos Doces"}
       </Text>
 
       {/* Lista que repete o cartão para cada doce encontrado */}
@@ -85,12 +87,14 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  
   titulo: {
     textAlign: "center",
     marginVertical: 16,
     color: "#4B2412",
     fontWeight: "bold",
   },
+  
   list: {
     paddingBottom: 20,
   }

@@ -4,6 +4,7 @@ import { Card, Text, IconButton } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import { useCart } from '../contexts/CartContext';
 import UsuarioService from '../services/UsuarioService';
+
 import { obterImagem } from '../utils/imageMapper';
 
 // Este é o cartão de produto compacto para a vitrine da Home
@@ -12,7 +13,6 @@ export default function RecommendationCard({ produto }) {
   const { adicionarAoCarrinho } = useCart();
 
   const imagemCapa = produto.imagensArray && produto.imagensArray.length > 0 ? produto.imagensArray[0] : null;
-
   const handleCardPress = () => {
     router.push(`/views/DocesListView?categoria=${produto.categoria}`);
   };

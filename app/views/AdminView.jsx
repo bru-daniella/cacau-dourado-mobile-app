@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, FlatList, Alert } from "react-native";
+import { View, StyleSheet, FlatList, Alert, ScrollView } from "react-native";
 import { Text, useTheme, Divider, Button } from "react-native-paper";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router"; // Importando useFocusEffect
 import UsuarioService from "../services/UsuarioService";
 import ProdutosService from "../services/ProdutosService";
 import AdminUserCard from "../components/AdminUserCard";
@@ -12,44 +12,53 @@ export default function AdminView() {
   const [usuarios, setUsuarios] = useState([]);
   const [isAdmin, setIsAdmin] = useState(true);
 
-  useEffect(() => {
-    const verificarPermissaoECarregar = async () => {
-      // 1. Pega o usuário logado atual
-      const usuarioLogado = UsuarioService.getUsuarioLogado();
-      
-      // 2. Verifica se existe alguém logado e se o email é o do admin
-      if (!usuarioLogado || usuarioLogado.email !== "admin@cacaudourado.com") {
-        setIsAdmin(false); // Não é admin
-        Alert.alert(
-          "Acesso Negado", 
-          "Você não tem permissão para acessar esta página.",
-          [{ text: "Voltar para Home", onPress: () => router.replace("/views/HomeView") }]
-        );
-        return; // Para a execução
-      }
-
-      // 3. Se for admin, carrega a lista de usuários do banco
+  // Função para recarregar os dados da tela (usuários)
+  const carregarDados = async () => {
+    try {
       const listaUsuarios = await UsuarioService.findAll();
       setUsuarios(listaUsuarios);
-    };
-    
-    verificarPermissaoECarregar();
-  }, [router]);
+    } catch (error) {
+      console.error("Erro ao carregar dados do admin:", error);
+    }
+  };
 
-  // Função para limpar o banco de produtos e forçar a recarga dos dados iniciais
+  // useFocusEffect é um hook do Expo Router que roda toda vez que a tela entra em foco.
+  // Isso garante que, ao voltar da tela de adicionar produto, os dados sejam atualizados.
+  useFocusEffect(
+    React.useCallback(() => {
+      const verificarPermissao = async () => {
+        const usuarioLogado = UsuarioService.getUsuarioLogado();
+        if (!usuarioLogado || usuarioLogado.email !== "admin@cacaudourado.com") {
+          setIsAdmin(false);
+          Alert.alert(
+            "Acesso Negado", 
+            "Você não tem permissão para acessar esta página.",
+            [{ text: "Voltar para Home", onPress: () => router.replace("/views/HomeView") }]
+          );
+          return;
+        }
+        // Se for admin, carrega os dados
+        setIsAdmin(true);
+        carregarDados();
+      };
+      
+      verificarPermissao();
+    }, [])
+  );
+
   const resetarBancoProdutos = async () => {
     Alert.alert(
       "Atenção",
-      "Isso irá apagar todos os produtos atuais do banco e recarregar os dados do arquivo 'ProdutosService.js'. Deseja continuar?",
+      "Isso irá apagar todos os produtos atuais e recarregar os dados do arquivo 'ProdutosService.js'. Deseja continuar?",
       [
         { text: "Cancelar", style: "cancel" },
         { 
           text: "Sim, Resetar Banco", 
           onPress: async () => {
             try {
-              await ProdutosService.clear(); // Limpa a tabela
-              await ProdutosService.popularDadosIniciais(); // Insere os mocks de volta
-              Alert.alert("Sucesso", "Banco de produtos resetado! As novas imagens e produtos agora estarão visíveis na loja.");
+              await ProdutosService.clear();
+              await ProdutosService.popularDadosIniciais();
+              Alert.alert("Sucesso", "Banco de produtos resetado!");
             } catch (error) {
               Alert.alert("Erro", "Falha ao resetar o banco de produtos.");
               console.error(error);
@@ -60,24 +69,32 @@ export default function AdminView() {
     );
   };
 
-  // Se não for admin, mostra uma tela vazia enquanto o alerta redireciona
   if (!isAdmin) {
     return <View style={[styles.container, { backgroundColor: theme.colors.background }]} />;
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Text variant="headlineMedium" style={styles.titulo}>Painel Admin</Text>
       
-      {/* Botão Utilitário para o Admin sincronizar os produtos do código com o banco SQLite */}
       <View style={styles.adminActions}>
+        <Button 
+          mode="contained" 
+          buttonColor="#4B2412" 
+          icon="plus"
+          onPress={() => router.push('/views/AddProductView')} // Navega para a nova tela
+          style={styles.actionButton}
+        >
+          Adicionar Produto
+        </Button>
         <Button 
           mode="contained" 
           buttonColor="#d32f2f" 
           icon="database-refresh"
           onPress={resetarBancoProdutos}
+          style={styles.actionButton}
         >
-          Sincronizar Novos Produtos
+          Sincronizar Mock
         </Button>
       </View>
 
@@ -85,11 +102,13 @@ export default function AdminView() {
       
       <Divider style={styles.divider} />
 
+      {/* A lista de usuários agora não precisa de uma altura fixa, pois a tela rola */}
       <FlatList
         data={usuarios}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <AdminUserCard usuario={item} />}
         contentContainerStyle={styles.list}
+        scrollEnabled={false} // Desabilita a rolagem da FlatList para usar a da tela
       />
       
       <Button 
@@ -99,7 +118,7 @@ export default function AdminView() {
       >
         Voltar para a Loja
       </Button>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -115,8 +134,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   adminActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     marginBottom: 20,
-    alignItems: "center",
+  },
+  actionButton: {
+    flex: 1,
+    marginHorizontal: 4,
   },
   subTitulo: {
     marginBottom: 16,
@@ -126,7 +150,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   list: {
-    paddingBottom: 20,
+    // Não precisa mais de paddingBottom, a rolagem da tela já dá o espaço
   },
   btnVoltar: {
     marginTop: 16,

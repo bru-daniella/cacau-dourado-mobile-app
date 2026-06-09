@@ -1,17 +1,24 @@
 import { useFonts } from "expo-font";
-import { useRouter, usePathname } from "expo-router";
-import { useState, useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { Appbar, Divider, Menu } from "react-native-paper";
+import { usePathname, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Appbar, Divider, Menu, Badge } from "react-native-paper";
 import UsuarioService from "../services/UsuarioService";
+import ProdutosService from "../services/ProdutosService";
+import { useCart } from "../contexts/CartContext";
 
 export default function TopDropDownMenu() {
+  useFonts({
+    Whisper: require("../../assets/fonts/Whisper.ttf"),
+  });
+
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
   
   // Estados para saber se tem alguém logado, e se esse alguém é admin
   const [isLogado, setIsLogado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  
+  const [categoriasMenu, setCategoriasMenu] = useState([]);
+
   const router = useRouter();
   const pathname = usePathname(); // Usado para forçar a re-renderização quando mudamos de tela
 
@@ -19,31 +26,34 @@ export default function TopDropDownMenu() {
     Whisper: require("../../assets/fonts/Whisper.ttf"),
   });
 
-  // Sempre que a rota muda (ex: quando o usuário faz login e vai pra home), 
-  // nós verificamos quem é o usuário logado.
   useEffect(() => {
-    const verificarUsuarioLogado = async () => {
+    const buscarCategorias = async () => {
+      try {
+        const todosProdutos = await ProdutosService.findAll();
+        const categoriasUnicas = [...new Set(todosProdutos.map(p => p.categoria))].filter(Boolean);
+        setCategoriasMenu(categoriasUnicas);
+      } catch (e) {
+        console.log("Erro ao buscar categorias para o menu", e);
+      }
+    };
+    
+    buscarCategorias();
+  }, []);
+
+  useEffect(() => {
+    const verificarUsuarioLogado = () => {
       const usuarioLogado = UsuarioService.getUsuarioLogado();
-      
-      // Se tiver usuário logado, marca o estado como true, senão false
       if (usuarioLogado) {
         setIsLogado(true);
-        
-        // Verifica se além de estar logado, ele é o administrador
-        if (usuarioLogado.email === "admin@cacaudourado.com") {
-          setIsAdmin(true);
-        } else {
-          setIsAdmin(false);
-        }
+        setIsAdmin(usuarioLogado.email === "admin@cacaudourado.com");
       } else {
         setIsLogado(false);
         setIsAdmin(false);
       }
     };
-
     verificarUsuarioLogado();
-  }, [pathname]); // O useEffect roda de novo sempre que o 'pathname' (URL atual) muda
-  
+  }, [pathname]);
+
   const abrirHamburguerMenu = () => setHamburguerVisible(true);
   const fecharHamburguerMenu = () => setHamburguerVisible(false);
 
@@ -76,49 +86,30 @@ export default function TopDropDownMenu() {
           onPress={() => navegarPara("/views/HomeView")}
           title="Início"
         />
-
         <Divider />
-        
-        {/* Tipos de doces */}
-        <Menu.Item
-          onPress={() => navegarPara("/views/DocesListView?categoria=Brigadeiro")}
-          title="Brigadeiros"
-        />
-        <Menu.Item
-          onPress={() => navegarPara("/views/DocesListView?categoria=Beijinho")}
-          title="Beijinhos"
-        />
-        <Menu.Item
-          onPress={() => navegarPara("/views/DocesListView?categoria=Brownie")}
-          title="Brownies"
-        />
-
+        {categoriasMenu.map(categoria => (
+          <Menu.Item
+            key={categoria}
+            onPress={() => navegarPara(`/views/DocesListView?categoria=${categoria}`)}
+            title={`${categoria}s`}
+          />
+        ))}
         <Divider />
-
-        {/* 
-          Se NÃO estiver logado, mostra opção de Login.
-          Se JÁ ESTIVER logado, mostra opção de Sair.
-        */}
         {!isLogado ? (
           <Menu.Item
             onPress={() => navegarPara("/views/LoginView")}
             title="Entrar / Cadastrar"
           />
         ) : (
-          <Menu.Item
-            onPress={fazerLogout}
-            title="Sair da conta"
-          />
+          <Menu.Item onPress={fazerLogout} title="Sair da conta" />
         )}
-
-        {/* O Painel Admin SÓ APARECE se a variável isAdmin for verdadeira */}
         {isAdmin && (
           <>
             <Divider />
             <Menu.Item
               onPress={() => navegarPara("/views/AdminView")}
               title="Painel Admin"
-              titleStyle={{ fontWeight: "bold", color: "#4B2412" }}
+              titleStyle={styles.adminTitle}
             />
           </>
         )}
@@ -147,9 +138,21 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "#FFFFFF",
+    fontFamily: "Whisper",
     fontWeight: "bold",
     fontSize: 20,
-    fontFamily: "Whisper",
     textAlign: "center",
   },
+  adminTitle: {
+    fontWeight: "bold",
+    color: "#4B2412",
+  },
+  badge: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    backgroundColor: '#FF6347',
+    color: 'white',
+    fontWeight: 'bold',
+  }
 });

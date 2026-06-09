@@ -35,14 +35,14 @@ export default function CarrinhoView() {
         
         // --- VISUAL QUANDO O CARRINHO ESTÁ VAZIO ---
         <View style={styles.carrinhoVazioContainer}>
-          <Text variant="bodyLarge">Seu carrinho está vazio.</Text>
+          <Text variant="bodyLarge">Sua cesta está vazia.</Text>
           <Button 
             mode="contained" 
             buttonColor="#4B2412" 
             style={styles.botaoAcao}
-            onPress={() => router.push('/views/HomeView')}
+            onPress={() => router.push('/views/DocesListView')}
           >
-            Voltar às Compras
+            Ver Produtos
           </Button>
         </View>
         
