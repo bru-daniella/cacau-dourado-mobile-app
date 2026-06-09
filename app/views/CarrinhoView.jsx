@@ -1,83 +1,108 @@
 import React from "react";
 import { View, StyleSheet, FlatList, Alert } from "react-native";
-import { Text, Button, useTheme } from "react-native-paper";
+import { Text, Button, useTheme, Divider } from "react-native-paper";
 import { useRouter } from "expo-router";
 import CartItemCard from "../components/CartItemCard";
 import { useCart } from "../contexts/CartContext";
 
-// Esta tela mostra os itens que o cliente quer comprar e permite finalizar o pedido
+function formatarMoeda(valor) {
+  return valor.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
 export default function CarrinhoView() {
   const theme = useTheme();
-  const router = useRouter(); // Ferramenta para navegar entre as telas
-  
-  // Lista de itens no carrinho
-  const { cartItems } = useCart();
+  const router = useRouter();
 
-  // O que acontece quando o cliente clica em "Finalizar Pedido"
+  const {
+    cartItems,
+    adicionarAoCarrinho,
+    diminuirQuantidade,
+    removerDoCarrinho,
+    limparCarrinho,
+    quantidadeTotal,
+    valorTotal,
+  } = useCart();
+
   const finalizarPedido = () => {
-    Alert.alert(
-      "Pedido Confirmado",
-      "Seu pedido foi finalizado com sucesso! Redirecionando para a tela inicial...",
-      [
-        // Ao clicar em OK, o cliente volta para a tela inicial (Home)
-        { text: "OK", onPress: () => router.push('/views/HomeView') }
-      ]
-    );
+    router.push("/views/CheckoutView");
   };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* Título da tela */}
-      <Text variant="headlineMedium" style={styles.titulo}>Seu Carrinho</Text>
+      <Text variant="headlineMedium" style={styles.titulo}>
+        Seu Carrinho
+      </Text>
 
-      {/* Verifica se o carrinho está vazio */}
       {cartItems.length === 0 ? (
-        
-        // --- VISUAL QUANDO O CARRINHO ESTÁ VAZIO ---
         <View style={styles.carrinhoVazioContainer}>
-          <Text variant="bodyLarge">Seu carrinho está vazio.</Text>
-          <Button 
-            mode="contained" 
-            buttonColor="#4B2412" 
+          <Text variant="titleMedium" style={styles.textoVazio}>
+            Seu carrinho está vazio.
+          </Text>
+
+          <Button
+            mode="contained"
+            buttonColor="#4B2412"
             style={styles.botaoAcao}
-            onPress={() => router.push('/views/HomeView')}
+            onPress={() => router.push("/views/HomeView")}
           >
             Voltar às Compras
           </Button>
         </View>
-        
       ) : (
-
-        // --- VISUAL QUANDO TEM ITENS NO CARRINHO ---
-        <View style={{ flex: 1 }}>
-          {/* Lista os itens do carrinho um por um usando o componente de cartão */}
+        <View style={styles.conteudo}>
           <FlatList
             data={cartItems}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item: produto }) => <CartItemCard produto={produto} />}
+            keyExtractor={(item) => String(item.id)}
+            renderItem={({ item }) => (
+              <CartItemCard
+                produto={item}
+                onAdicionar={adicionarAoCarrinho}
+                onDiminuir={diminuirQuantidade}
+                onRemover={removerDoCarrinho}
+              />
+            )}
+            contentContainerStyle={styles.lista}
           />
-          
-          {/* Botão de finalizar compra */}
-          <Button 
-            mode="contained" 
-            buttonColor="#4B2412" 
-            style={styles.botaoAcao}
-            onPress={finalizarPedido}
-          >
-            Finalizar Pedido
-          </Button>
+
+          <View style={styles.resumoContainer}>
+            <View style={styles.linhaResumo}>
+              <Text style={styles.labelResumo}>Itens</Text>
+              <Text style={styles.valorResumo}>{quantidadeTotal}</Text>
+            </View>
+
+            <Divider style={styles.divisor} />
+
+            <View style={styles.linhaResumo}>
+              <Text style={styles.labelTotal}>Total</Text>
+              <Text style={styles.valorTotal}>{formatarMoeda(valorTotal)}</Text>
+            </View>
+
+            <Button
+              mode="contained"
+              buttonColor="#4B2412"
+              style={styles.botaoAcao}
+              labelStyle={styles.textoBotao}
+              onPress={finalizarPedido}
+            >
+              Finalizar Pedido
+            </Button>
+          </View>
         </View>
-        
       )}
     </View>
   );
 }
 
-// Estilos visuais da tela
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+  },
+  conteudo: {
+    flex: 1,
   },
   titulo: {
     textAlign: "center",
@@ -85,14 +110,59 @@ const styles = StyleSheet.create({
     color: "#4B2412",
     fontWeight: "bold",
   },
+  lista: {
+    paddingBottom: 12,
+  },
   carrinhoVazioContainer: {
     flex: 1,
-    justifyContent: "center", // Centraliza o texto e botão no meio da tela
+    justifyContent: "center",
     alignItems: "center",
     gap: 16,
+  },
+  textoVazio: {
+    color: "#4B2412",
+    fontWeight: "bold",
+  },
+  resumoContainer: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 16,
+    marginTop: 8,
+    elevation: 3,
+  },
+  linhaResumo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  labelResumo: {
+    fontSize: 16,
+    color: "#4B2412",
+  },
+  valorResumo: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  divisor: {
+    marginVertical: 10,
+  },
+  labelTotal: {
+    fontSize: 20,
+    color: "#4B2412",
+    fontWeight: "bold",
+  },
+  valorTotal: {
+    fontSize: 20,
+    color: "#4B2412",
+    fontWeight: "bold",
   },
   botaoAcao: {
     marginTop: 16,
     paddingVertical: 8,
-  }
+    borderRadius: 18,
+  },
+  textoBotao: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
