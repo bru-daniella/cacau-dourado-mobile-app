@@ -7,7 +7,6 @@ import UsuarioService from "../services/UsuarioService";
 
 export default function TopDropDownMenu() {
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
-  const [cartVisible, setCartVisible] = useState(false);
   
   // Estados para saber se tem alguém logado, e se esse alguém é admin
   const [isLogado, setIsLogado] = useState(false);
@@ -15,7 +14,7 @@ export default function TopDropDownMenu() {
   
   const router = useRouter();
   const pathname = usePathname(); // Usado para forçar a re-renderização quando mudamos de tela
-  
+
   const [loaded, error] = useFonts({
     Whisper: require("../../assets/fonts/Whisper.ttf"),
   });
@@ -129,29 +128,15 @@ export default function TopDropDownMenu() {
         title="Cacau Dourado"
         fontFamily="Whisper"
         titleStyle={styles.title}
+        style={{ flex: 1 }}
+        onPress={() => router.push('/views/HomeView')}
       />
 
-      {/* 
-        O ícone do carrinho só faz sentido se o usuário estiver logado.
-        Caso contrário, você pode esconder ou deixar visível pedindo login depois.
-        Neste caso, vou manter visível, pois ele pode navegar antes de logar.
-      */}
-      <Menu
-        visible={cartVisible}
-        onDismiss={() => setCartVisible(false)}
-        anchor={
-          <Appbar.Action
-            icon="cart"
-            iconColor="#FFF"
-            onPress={() => setCartVisible(true)}
-          />
-        }
-      >
-        <Menu.Item
-          onPress={() => navegarPara("/views/CarrinhoView")}
-          title="Ver Carrinho"
-        />
-      </Menu>
+      <Appbar.Action
+        icon="cart"
+        iconColor="#FFF"
+        onPress={() => router.push('/views/CarrinhoView')}
+      />
     </Appbar.Header>
   );
 }

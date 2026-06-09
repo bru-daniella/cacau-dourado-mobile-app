@@ -2,6 +2,7 @@ import { Slot } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { MD3LightTheme, PaperProvider } from "react-native-paper";
 import TopDropDownMenu from "./components/TopDropDownMenu";
+import { CartProvider } from "./contexts/CartContext";
 
 const tema = {
   ...MD3LightTheme,
@@ -17,15 +18,17 @@ const tema = {
 
 export default function RootLayout() {
   return (
-    <PaperProvider theme={tema}>
-      <View style={styles.container}>
-        <TopDropDownMenu />
+    <CartProvider>
+      <PaperProvider theme={tema}>
+        <View style={styles.container}>
+          <TopDropDownMenu />
 
-        <View style={styles.content}>
-          <Slot />
+          <View style={styles.content}>
+            <Slot />
+          </View>
         </View>
-      </View>
-    </PaperProvider>
+      </PaperProvider>
+    </CartProvider>
   );
 }
 

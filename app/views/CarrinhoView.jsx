@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet, FlatList, Alert } from "react-native";
 import { Text, Button, useTheme } from "react-native-paper";
 import { useRouter } from "expo-router";
 import CartItemCard from "../components/CartItemCard";
+import { useCart } from "../contexts/CartContext";
 
 // Esta tela mostra os itens que o cliente quer comprar e permite finalizar o pedido
 export default function CarrinhoView() {
   const theme = useTheme();
   const router = useRouter(); // Ferramenta para navegar entre as telas
   
-  // Lista de itens no carrinho (por enquanto começa vazio para demonstração)
-  const [itensCarrinho, setItensCarrinho] = useState([]);
+  // Lista de itens no carrinho
+  const { cartItems } = useCart();
 
   // O que acontece quando o cliente clica em "Finalizar Pedido"
   const finalizarPedido = () => {
@@ -30,7 +31,7 @@ export default function CarrinhoView() {
       <Text variant="headlineMedium" style={styles.titulo}>Seu Carrinho</Text>
 
       {/* Verifica se o carrinho está vazio */}
-      {itensCarrinho.length === 0 ? (
+      {cartItems.length === 0 ? (
         
         // --- VISUAL QUANDO O CARRINHO ESTÁ VAZIO ---
         <View style={styles.carrinhoVazioContainer}>
@@ -51,7 +52,7 @@ export default function CarrinhoView() {
         <View style={{ flex: 1 }}>
           {/* Lista os itens do carrinho um por um usando o componente de cartão */}
           <FlatList
-            data={itensCarrinho}
+            data={cartItems}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item: produto }) => <CartItemCard produto={produto} />}
           />

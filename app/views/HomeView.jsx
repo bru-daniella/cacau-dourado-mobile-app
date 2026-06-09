@@ -1,72 +1,64 @@
-import { useState, useEffect } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, FlatList, Text, TouchableOpacity } from "react-native";
 import { useTheme } from "react-native-paper";
-import { Banner, Button, HStack } from "@react-native-material/core";
 import { useRouter } from "expo-router";
 import UsuarioService from "../services/UsuarioService";
+import ProdutosService from "../services/ProdutosService";
+import RecommendationCard from "../components/RecommendationCard";
 
 export default function HomeView() {
   const theme = useTheme();
   const router = useRouter();
+  const [produtosPorCategoria, setProdutosPorCategoria] = useState({});
 
-  // Tenta criar o admin assim que a HomeView for carregada pela primeira vez.
-  // Isso resolve o problema caso o admin não seja criado ao abrir a tela de Login
   useEffect(() => {
     UsuarioService.initAdminUser();
+
+    const carregarProdutos = async () => {
+      const todosProdutos = await ProdutosService.findAll();
+      const agrupados = todosProdutos.reduce((acc, produto) => {
+        const { categoria } = produto;
+        if (!acc[categoria]) {
+          acc[categoria] = [];
+        }
+        acc[categoria].push(produto);
+        return acc;
+      }, {});
+      setProdutosPorCategoria(agrupados);
+    };
+
+    carregarProdutos();
   }, []);
+
+  const renderRoleta = ({ item: categoria }) => (
+    <View style={style.categoriaContainer}>
+      <View style={style.headerCategoria}>
+        <Text style={style.categoriaTitulo}>{categoria}</Text>
+        <TouchableOpacity onPress={() => router.push(`/views/DocesListView?categoria=${categoria}`)}>
+          <Text style={style.verMaisText}>Ver mais</Text>
+        </TouchableOpacity>
+      </View>
+      <FlatList
+        data={produtosPorCategoria[categoria]}
+        renderItem={({ item }) => <RecommendationCard produto={item} />}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={style.roleta}
+      />
+    </View>
+  );
 
   return (
     <View
       style={[style.container, { backgroundColor: theme.colors.background }]}
     >
-      <View style={style.conteudo}>
-        <Banner
-          text="Conheça as melhores barras recheadas!"
-          illustration={
-            <Image
-              source={require("../../assets/images/banner1.jpg")}
-              style={{ width: "100%", height: "100%" }}
-              resizeMode="cover"
-            />
-          }
-          illustrationContainerStyle={{
-            width: "100%",
-            height: 150,
-            overflow: "hidden",
-            borderRadius: 8,
-          }}
-          textContainerStyle={{
-            position: "absolute",
-            bottom: 20,
-            left: 10,
-            right: 80,
-            color: "#FFFFFF",
-            backgroundColor: "#1d00001f",
-            padding: 20,
-            borderRadius: 6,
-          }}
-          textStyle={{
-            color: "rgb(255 207 91)",
-            fontSize: 25,
-            textAlign: "left",
-            fontFamily: "Georgia",
-            textShadowColor: "#000",
-            textShadowOffset: { width: 2, height: 2 },
-            textShadowRadius: 3,
-          }}
-          buttons={
-            <HStack spacing={4}>
-              <Button 
-                variant="contained" 
-                color="#4B2412"
-                title="Ver Produtos" 
-                compact 
-                onPress={() => router.push('/views/DocesListView')}
-              />
-            </HStack>
-          }
-        />
-      </View>
+      <FlatList
+        data={Object.keys(produtosPorCategoria)}
+        renderItem={renderRoleta}
+        keyExtractor={(categoria) => categoria}
+        contentContainerStyle={style.conteudo}
+      />
     </View>
   );
 }
@@ -76,13 +68,29 @@ const style = StyleSheet.create({
     flex: 1,
   },
   conteudo: {
-    flex: 1,
-    gap: 10,
+    paddingVertical: 16,
   },
-  text: {
-    fontSize: 40,
-    justifyContent: "center",
-    textAlign: "center",
-    color: "#FFFF",
+  categoriaContainer: {
+    marginBottom: 24,
+  },
+  headerCategoria: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  categoriaTitulo: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#4B2412",
+  },
+  verMaisText: {
+    fontSize: 14,
+    color: "#7babe7",
+    fontWeight: "bold",
+  },
+  roleta: {
+    paddingLeft: 16,
   },
 });

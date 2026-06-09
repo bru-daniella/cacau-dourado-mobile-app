@@ -15,7 +15,7 @@ export default function Index() {
     inicializar();
   }, []);
 
-  return <Redirect href="/views/LoginView" />;
+  return <Redirect href="/views/HomeView" />;
 }
 
 const style = StyleSheet.create({
