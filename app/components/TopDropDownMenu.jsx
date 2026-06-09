@@ -13,14 +13,18 @@ export default function TopDropDownMenu() {
   });
 
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
+  
+  // Estados para saber se tem alguém logado, e se esse alguém é admin
   const [isLogado, setIsLogado] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [categoriasMenu, setCategoriasMenu] = useState([]);
 
   const router = useRouter();
-  const pathname = usePathname();
-  const { itens } = useCart();
-  const quantidadeTotalCarrinho = itens.reduce((total, item) => total + item.quantidade, 0);
+  const pathname = usePathname(); // Usado para forçar a re-renderização quando mudamos de tela
+
+  const [loaded, error] = useFonts({
+    Whisper: require("../../assets/fonts/Whisper.ttf"),
+  });
 
   useEffect(() => {
     const buscarCategorias = async () => {
@@ -110,21 +114,20 @@ export default function TopDropDownMenu() {
           </>
         )}
       </Menu>
-      <Appbar.Content title="Cacau Dourado" titleStyle={styles.title} />
-      
-      {/* Ícone do carrinho corrigido */}
-      <View>
-        <Appbar.Action
-          icon="cart"
-          iconColor="#FFFFFF"
-          onPress={() => navegarPara("/views/CarrinhoView")}
-        />
-        {quantidadeTotalCarrinho > 0 && (
-          <Badge size={20} style={styles.badge}>
-            {quantidadeTotalCarrinho}
-          </Badge>
-        )}
-      </View>
+
+      <Appbar.Content
+        title="Cacau Dourado"
+        fontFamily="Whisper"
+        titleStyle={styles.title}
+        style={{ flex: 1 }}
+        onPress={() => router.push('/views/HomeView')}
+      />
+
+      <Appbar.Action
+        icon="cart"
+        iconColor="#FFF"
+        onPress={() => router.push('/views/CarrinhoView')}
+      />
     </Appbar.Header>
   );
 }

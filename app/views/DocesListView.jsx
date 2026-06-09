@@ -1,67 +1,62 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Alert, FlatList, StyleSheet, View } from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, StyleSheet, FlatList, Alert } from "react-native";
 import { Text, useTheme } from "react-native-paper";
-import ProductCard from "../components/ProductCard.jsx";
+import { useLocalSearchParams, useFocusEffect, useRouter } from "expo-router"; // Importando useFocusEffect e useRouter
 import ProdutosService from "../services/ProdutosService";
+import ProductCard from "../components/ProductCard";
+import { useCart } from "../contexts/CartContext";
 import UsuarioService from "../services/UsuarioService";
-import { useCart } from "../contexts/CartContext"; // Importamos o hook do carrinho
 
 // Esta tela mostra a lista de doces para o cliente comprar
 export default function DocesListView() {
   // Pega a categoria selecionada (ex: "Brigadeiro") que vem da URL
   const { categoria } = useLocalSearchParams();
   const router = useRouter();
-
-  // Traz a função de adicionar do nosso Contexto Global do Carrinho
-  const { adicionarAoCarrinho } = useCart();
-
+  
   // Guarda a lista de doces que vai aparecer na tela
   const [doces, setDoces] = useState([]);
   const theme = useTheme();
+  
+  const { adicionarAoCarrinho } = useCart();
 
-  // Executa assim que a tela abre ou quando a categoria muda
-  useEffect(() => {
-    const carregarProdutos = async () => {
-      // 1. Busca todos os produtos do banco de dados
-      const todosProdutos = await ProdutosService.findAll();
-
-      // 2. Filtra os produtos: Se tiver uma categoria escolhida, mostra só os da categoria. Se não, mostra todos.
-      const docesFiltrados = categoria
-        ? todosProdutos.filter((produto) => produto.categoria === categoria)
-        : todosProdutos;
-
-      // 3. Salva os produtos filtrados para mostrar na tela
-      setDoces(docesFiltrados);
-    };
-
-    carregarProdutos();
-  }, [categoria]);
+  // useFocusEffect garante que os produtos sejam recarregados toda vez que a tela é aberta
+  // Isso resolve problemas de cache onde a lista ficava presa em um filtro anterior
+  useFocusEffect(
+    useCallback(() => {
+      const carregarProdutos = async () => {
+        // 1. Busca todos os produtos do banco de dados
+        const todosProdutos = await ProdutosService.findAll();
+        
+        // 2. Filtra os produtos: Se tiver uma categoria escolhida, mostra só os da categoria. 
+        // Se não, mostra todos.
+        const docesFiltrados = categoria 
+          ? todosProdutos.filter(produto => produto.categoria === categoria) 
+          : todosProdutos;
+          
+        // 3. Salva os produtos filtrados para mostrar na tela
+        setDoces(docesFiltrados);
+      };
+      
+      carregarProdutos();
+    }, [categoria]) // O efeito será re-executado se a categoria mudar
+  );
 
   // Função chamada quando o usuário clica no botão "Adicionar ao Carrinho"
   const handleAdicionarAoCarrinho = (produtoSelecionado) => {
-    // 1. Verifica se existe um usuário logado
     const usuarioAtual = UsuarioService.getUsuarioLogado();
-
-    // 2. Se NÃO houver usuário logado, barra a ação e sugere o login
     if (!usuarioAtual) {
       Alert.alert(
         "Login Necessário",
-        "Você precisa estar logado para adicionar produtos à cesta. Deseja fazer login agora?",
+        "Você precisa estar logado para adicionar produtos ao carrinho.",
         [
           { text: "Cancelar", style: "cancel" },
           { text: "Ir para Login", onPress: () => router.push('/views/LoginView') }
         ]
       );
-      return; // Para a execução aqui, não adiciona ao carrinho
+      return;
     }
-
-    // 3. Se houver usuário logado, continua o fluxo normal
     adicionarAoCarrinho(produtoSelecionado);
-    Alert.alert(
-      "Sucesso",
-      `${produtoSelecionado.nome} foi adicionado à sua cesta!`,
-    );
+    Alert.alert("Sucesso", `${produtoSelecionado.nome} foi adicionado ao carrinho!`);
   };
 
   return (
@@ -102,5 +97,5 @@ const styles = StyleSheet.create({
   
   list: {
     paddingBottom: 20,
-  },
+  }
 });

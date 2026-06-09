@@ -1,44 +1,11 @@
-import { Dimensions, Image, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import React from "react";
+import { View, StyleSheet, Image, ScrollView, Dimensions } from "react-native";
+import { Text, Card, Button } from "react-native-paper";
+import { obterImagem } from "../utils/imageMapper";
 
 const { width } = Dimensions.get("window");
 
-// 1. DICIONÁRIO DE IMAGENS LOCAIS
-// Ligar nomes (usados no banco de dados) aos arquivos locais corretos na pasta assets
-const dicionarioDeImagens = {
-  // Brigadeiros
-  "brigadeiro-1": require("../../assets/images/products/brigadeiro-1.jpg"),
-  "brigadeiro-2": require("../../assets/images/products/brigadeiro-2.jpg"),
-  "brigadeiro-3": require("../../assets/images/products/brigadeiro-3.webp"),
-  "brigadeiro-4": require("../../assets/images/products/brigadeiro-4.jpg"),
-
-  // Beijinhos
-  "beijinho-1": require("../../assets/images/products/beijinho-1.jpg"),
-  "beijinho-2": require("../../assets/images/products/beijinho-2.jpg"),
-  "beijinho-3": require("../../assets/images/products/beijinho-3.jpg"),
-
-  // Brownies
-  "brownie-1": require("../../assets/images/products/brownie-1.jpg"),
-  "brownie-2": require("../../assets/images/products/brownie-2.jpg"),
-  "brownie-3": require("../../assets/images/products/brownie-3.jpg"),
-  "brownie-4": require("../../assets/images/products/brownie-4.jpg"),
-};
-
 export default function ProductCard({ produto, onAddToCart }) {
-  // 2. FUNÇÃO PARA DESCOBRIR QUAL IMAGEM MOSTRAR
-  const obterImagem = (nomeOuUrl) => {
-    // A) Se o nome estiver no nosso dicionário, retorna a imagem local
-    if (dicionarioDeImagens[nomeOuUrl]) {
-      return dicionarioDeImagens[nomeOuUrl];
-    }
-    // B) Se não estiver no dicionário, mas for um link da internet (começa com http), retorna o link
-    if (typeof nomeOuUrl === "string" && nomeOuUrl.startsWith("http")) {
-      return { uri: nomeOuUrl };
-    }
-    // C) Se não for nenhum dos dois, retorna uma imagem genérica "placeholder"
-    return { uri: "https://via.placeholder.com/300?text=Sem+Imagem" };
-  };
-
   return (
     <Card style={styles.card}>
       {/* Componente de Scroll Lateral para Imagens */}

@@ -15,7 +15,6 @@ export default function Index() {
     inicializar();
   }, []);
 
-  // Agora, o ponto de entrada principal do app é a HomeView.
   return <Redirect href="/views/HomeView" />;
 }
 
