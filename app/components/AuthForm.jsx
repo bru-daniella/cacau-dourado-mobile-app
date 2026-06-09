@@ -17,9 +17,18 @@ export default function AuthForm({ onSubmit, isLogin, onToggleMode }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  // Verifica se os campos obrigatórios foram preenchidos para liberar o botão
+  const formularioValido = isLogin
+    ? email.trim() !== '' && password.trim() !== ''
+    : name.trim() !== '' && email.trim() !== '' && password.trim() !== '';
 
   // Função que é chamada quando o botão principal (Entrar/Cadastrar) é pressionado
   const handleSubmit = () => {
+    // Se ainda faltam campos obrigatórios, não deixa enviar
+    if (!formularioValido) {
+      return;
+    }
+
     // Verifica se a função onSubmit foi passada pela tela pai
     if (onSubmit) {
       // Chama a função da tela pai, enviando os dados que o usuário digitou
@@ -69,7 +78,16 @@ export default function AuthForm({ onSubmit, isLogin, onToggleMode }) {
       />
 
       {/* Botão Principal */}
-      <Button mode="contained" onPress={handleSubmit} style={styles.button}>
+      <Button
+        mode="contained"
+        onPress={handleSubmit}
+        disabled={!formularioValido}
+        style={[
+          styles.button,
+          formularioValido ? styles.buttonAtivo : styles.buttonInativo
+        ]}
+        labelStyle={styles.buttonLabel}
+      >
         {isLogin ? 'Entrar' : 'Cadastrar'}
       </Button>
 
@@ -98,5 +116,15 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 8,
     marginBottom: 8,
+  },
+  buttonAtivo: {
+    backgroundColor: '#4B2412',
+  },
+  buttonInativo: {
+    backgroundColor: '#B7CBE3',
+  },
+  buttonLabel: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
 });
