@@ -22,69 +22,105 @@ function formatarMoeda(valor) {
   });
 }
 
-export default function CartItemCard({
-  produto,
-  onAdicionar,
-  onDiminuir,
-  onRemover,
-}) {
-  const imagemCapa =
-    produto.imagensArray && produto.imagensArray.length > 0
-      ? produto.imagensArray[0]
-      : null;
+function obterImagemCapa(produto) {
+  if (produto.imagensArray && produto.imagensArray.length > 0) {
+    return produto.imagensArray[0];
+  }
 
+  if (Array.isArray(produto.imagens) && produto.imagens.length > 0) {
+    return produto.imagens[0];
+  }
+
+  if (typeof produto.imagens === "string") {
+    try {
+      const imagensConvertidas = JSON.parse(produto.imagens);
+
+      if (Array.isArray(imagensConvertidas) && imagensConvertidas.length > 0) {
+        return imagensConvertidas[0];
+      }
+    } catch (error) {
+      return produto.imagens;
+    }
+  }
+
+  if (Array.isArray(produto.imagem) && produto.imagem.length > 0) {
+    return produto.imagem[0];
+  }
+
+  if (typeof produto.imagem === "string") {
+    try {
+      const imagensConvertidas = JSON.parse(produto.imagem);
+
+      if (Array.isArray(imagensConvertidas) && imagensConvertidas.length > 0) {
+        return imagensConvertidas[0];
+      }
+    } catch (error) {
+      return produto.imagem;
+    }
+  }
+
+  return null;
+}
+
+export default function CartItemCard({
+                                       produto,
+                                       onAdicionar,
+                                       onDiminuir,
+                                       onRemover,
+                                     }) {
+  const imagemCapa = obterImagemCapa(produto);
   const precoUnitario = converterPrecoParaNumero(produto.preco);
   const subtotal = precoUnitario * produto.quantidade;
 
   return (
-    <Card style={styles.cartaoProduto}>
-      <View style={styles.conteudoCartao}>
-        <Image
-          source={obterImagem(imagemCapa)}
-          style={styles.imagemProduto}
-          resizeMode="cover"
-        />
+      <Card style={styles.cartaoProduto}>
+        <View style={styles.conteudoCartao}>
+          <Image
+              source={obterImagem(imagemCapa)}
+              style={styles.imagemProduto}
+              resizeMode="cover"
+          />
 
-        <View style={styles.infoProduto}>
-          <Text variant="titleMedium" style={styles.nomeProduto}>
-            {produto.nome}
-          </Text>
+          <View style={styles.infoProduto}>
+            <Text variant="titleMedium" style={styles.nomeProduto}>
+              {produto.nome}
+            </Text>
 
-          <Text variant="bodyMedium" style={styles.precoProduto}>
-            {formatarMoeda(precoUnitario)}
-          </Text>
+            <Text variant="bodyMedium" style={styles.precoProduto}>
+              {formatarMoeda(precoUnitario)}
+            </Text>
 
-          <Text variant="bodySmall" style={styles.subtotal}>
-            Subtotal: {formatarMoeda(subtotal)}
-          </Text>
+            <Text variant="bodySmall" style={styles.subtotal}>
+              Subtotal: {formatarMoeda(subtotal)}
+            </Text>
 
-          <View style={styles.quantidadeContainer}>
-            <IconButton
-              icon="minus"
-              size={18}
-              mode="contained-tonal"
-              onPress={() => onDiminuir(produto.id)}
-            />
+            <View style={styles.quantidadeContainer}>
+              <IconButton
+                  icon="minus"
+                  size={18}
+                  mode="contained-tonal"
+                  onPress={() => onDiminuir(produto.id)}
+              />
 
-            <Text style={styles.quantidade}>{produto.quantidade}</Text>
+              <Text style={styles.quantidade}>{produto.quantidade}</Text>
 
-            <IconButton
-              icon="plus"
-              size={18}
-              mode="contained-tonal"
-              onPress={() => onAdicionar(produto)}
-            />
+              <IconButton
+                  icon="plus"
+                  size={18}
+                  mode="contained-tonal"
+                  onPress={() => onAdicionar(produto)}
+              />
 
-            <IconButton
-              icon="trash-can-outline"
-              size={20}
-              iconColor="#A00000"
-              onPress={() => onRemover(produto.id)}
-            />
+              <IconButton
+                  icon="trash-can-outline"
+                  size={20}
+                  iconColor="#A00000"
+                  onPress={() => onRemover(produto.id)}
+              />
+            </View>
           </View>
         </View>
-      </View>
-    </Card>
+      </Card>
   );
 }
 
@@ -104,6 +140,7 @@ const styles = StyleSheet.create({
     height: 74,
     borderRadius: 10,
     marginRight: 14,
+    backgroundColor: "#F2E3C6",
   },
   infoProduto: {
     flex: 1,

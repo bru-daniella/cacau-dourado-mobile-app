@@ -1,9 +1,11 @@
 import { useRouter, usePathname } from "expo-router";
 import { useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import {StyleSheet, View, Image, Text} from "react-native";
 import { Appbar, Badge, Divider, Menu } from "react-native-paper";
 import UsuarioService from "../services/UsuarioService";
 import { useCart } from "../contexts/CartContext";
+
+const logoCacauDourado = require("../../assets/images/logo/logo-cacau-dourado.png");
 
 export default function TopDropDownMenu() {
   const [hamburgerVisible, setHamburguerVisible] = useState(false);
@@ -115,10 +117,17 @@ export default function TopDropDownMenu() {
         )}
       </Menu>
 
-      <Appbar.Content
-        title="Cacau Dourado"
-        titleStyle={styles.title}
-      />
+      <View style={styles.logoTituloContainer}>
+        <Image
+            source={logoCacauDourado}
+            style={styles.logo}
+            resizeMode="cover"
+        />
+
+        <Text style={styles.title}>
+          Cacau Dourado
+        </Text>
+      </View>
 
       <Menu
         visible={cartVisible}
@@ -152,6 +161,21 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: "#4B2412",
   },
+
+  logoTituloContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logo: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    marginRight: 10,
+    backgroundColor: "#FFFFFF",
+  },
+
   title: {
     color: "#FFFFFF",
     fontWeight: "bold",
